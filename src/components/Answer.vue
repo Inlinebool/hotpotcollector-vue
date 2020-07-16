@@ -2,19 +2,18 @@
   <v-card class="ma-3">
     <v-card-text>
       <v-container>
-        <v-row></v-row>
         <v-row>
-          <v-text-field label="Answer" outlined></v-text-field>
+          <v-text-field label="Answer" v-model="answer" outlined></v-text-field>
         </v-row>
         <v-row>
-          <v-textarea name="Note" label="Note" outlined></v-textarea>
+          <v-textarea name="Note" label="Note" v-model="note" outlined></v-textarea>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn small>Submit and Next Question</v-btn>
+            <v-btn small @click="onSubmit">Submit and Next Question</v-btn>
           </v-col>
           <v-col>
-            <v-btn small>Skip and Next Question</v-btn>
+            <v-btn small @click="onSkip">Skip and Next Question</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -31,10 +30,16 @@ import { Prop } from "vue-property-decorator";
 export default class Answer extends Vue {
   name = "Answer";
 
-  // @Prop(Array) readonly context: [] | undefined;
+  answer = "";
 
-  // created() {
-  //   console.log(this.context);
-  // }
+  note = "";
+
+  onSubmit() {
+    this.$emit("submit", this.answer, this.note);
+  }
+
+  onSkip() {
+    this.$emit("skip", this.note);
+  }
 }
 </script>

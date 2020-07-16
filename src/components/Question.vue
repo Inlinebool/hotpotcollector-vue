@@ -1,15 +1,14 @@
 <template>
-  <v-card class="ma-3">
+  <v-card class="ma-3" width="100%">
     <v-card-text>
       <v-container>
         <v-row>
-          <div class="text-h1" v-text="tooltip"></div>
+          <div class="text-subtitle-1 mb-3" v-text="tooltip"></div>
         </v-row>
         <v-row>
-          <div class="text-h5" v-text="question"></div>
+          <div class="text-h5 font-weight-bold" v-text="question"></div>
         </v-row>
       </v-container>
-      <p class="text-body-1" v-text="question"></p>
     </v-card-text>
   </v-card>
 </template>
@@ -26,6 +25,14 @@ export default class Question extends Vue {
   tooltip =
     "For the following question, type in the correct answer based on the given paragraphs and click on the sentence that support your answer.";
 
-  @Prop(String) readonly question: string | undefined;
+  @Prop(String) readonly question!: string;
+
+  goto() {
+    return 0;
+  }
+
+  // updated() {
+  //   console.log(this.question);
+  // }
 }
 </script>
