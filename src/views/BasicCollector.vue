@@ -28,7 +28,11 @@
         </v-row>
         <v-row>
           <v-col cols="8">
-            <Context :context="context" v-model="selectedFacts" />
+            <Context
+              :context="context"
+              v-model="selectedFacts"
+              @searchStringChanged="updateSearchString"
+            />
           </v-col>
           <v-col cols="4">
             <v-row>
@@ -53,7 +57,7 @@ import SelectedFactHint from "../components/SelectedFactHint.vue";
 import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum from "../Datum";
+import Datum, { ParagraphHitStatus } from "../Datum";
 
 @Component({
   components: {
@@ -70,6 +74,7 @@ export default class BasicCollector extends Vue {
   selectedFacts = [];
   gotoIdx = -1;
   previousIndices = [] as number[];
+  searchString = "" as string;
   created() {
     this.randomQuestion(true);
   }
@@ -96,7 +101,6 @@ export default class BasicCollector extends Vue {
   }
 
   backup() {
-    console.log(this.previousIndices);
     if (this.previousIndices.length) {
       this.indexedQuestion(this.previousIndices.pop() as number, false);
     }
@@ -133,6 +137,14 @@ export default class BasicCollector extends Vue {
     this.datum = datum;
     this.selectedFacts = [];
     this.gotoIdx = this.datum.idx;
+  }
+
+  updateSearchString(
+    searchString: string,
+    contextHitStatus: ParagraphHitStatus[]
+  ) {
+    this.searchString = searchString;
+    console.log(contextHitStatus);
   }
 }
 </script>

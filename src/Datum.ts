@@ -21,15 +21,26 @@ export interface Paragraph {
   1: NumberedSentence[];
 }
 
-// export interface ParagraphConstructor {
-//   new(title: string, content: NumberedSentence[]): Paragraph;
-//   clone(): Paragraph;
-// }
+export interface ParagraphHitStatus {
+  hit: boolean;
+  hitSentences: number[];
+}
 
-// export interface NumberedSentenceConstructor {
-//   new(idx: number, sentence: string): NumberedSentence;
-//   clone(): NumberedSentence;
-// }
-
-// export let Paragraph: ParagraphConstructor;
-// export let NumberedSentence: NumberedSentenceConstructor;
+export function searchParagraph(paragraph: Paragraph, searchString: string) {
+  if (!searchString) {
+    return { hit: true, hitSentences: [] }
+  }
+  const query = searchString.toLowerCase();
+  let hit = false;
+  const hitSentences = [] as number[];
+  if (paragraph[0].toLowerCase().includes(query)) {
+    hit = true;
+  }
+  paragraph[1].forEach(sentence => {
+    if (sentence[1].toLowerCase().includes(query)) {
+      hit = true;
+      hitSentences.push(sentence[0])
+    }
+  });
+  return { hit: hit, hitSentences: hitSentences }
+}

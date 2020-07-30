@@ -3,7 +3,7 @@
     <v-expansion-panel-header>{{ paragraph[0] }}</v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
-        <Sentence :sentence="sentence" v-model="value" />
+        <Sentence :sentence="sentence" v-model="value" :hitStatus="hitStatus" />
       </v-row>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -14,12 +14,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
 import { Prop } from "vue-property-decorator";
-import { Paragraph } from "../Datum";
+import { Paragraph, ParagraphHitStatus } from "../Datum";
 
 @Component({
   components: {
-    Sentence
-  }
+    Sentence,
+  },
 })
 export default class ParagraphPanel extends Vue {
   name = "ParagraphPanel";
@@ -28,6 +28,8 @@ export default class ParagraphPanel extends Vue {
 
   @Prop(Array)
   value!: number[];
+
+  @Prop(Object) readonly hitStatus!: ParagraphHitStatus;
 
   onFactClicked(idx: number, value: boolean) {
     this.$emit("factClicked", idx, value);

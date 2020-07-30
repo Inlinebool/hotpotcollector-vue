@@ -2,7 +2,7 @@
   <v-hover v-slot:default="{ hover }">
     <v-card
       :elevation="hover ? 2 : 0"
-      :class="{ 'on-hover': hover , 'blue lighten-4': selected, 'font-weight-medium': selected}"
+      :class="{ 'on-hover': hover , 'blue lighten-4 font-weight-medium': selected, 'purple lighten-5': hit}"
       style="cursor:pointer;user-select:none"
       width="100%"
       @click="onClickFact"
@@ -19,7 +19,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-import { NumberedSentence } from "../Datum";
+import { NumberedSentence, ParagraphHitStatus } from "../Datum";
 
 @Component
 export default class ParagraphPanel extends Vue {
@@ -30,6 +30,8 @@ export default class ParagraphPanel extends Vue {
   @Prop(Array)
   value!: number[];
 
+  @Prop(Object) readonly hitStatus!: ParagraphHitStatus;
+
   get selected() {
     if (this.value.includes(this.sentence[0])) {
       return true;
@@ -38,9 +40,16 @@ export default class ParagraphPanel extends Vue {
     }
   }
 
-  // created() {
-  //   console.log(this.sentence);
-  // }
+  get hit() {
+    if (!this.hitStatus) {
+      return false;
+    }
+    if (this.hitStatus.hitSentences.includes(this.sentence[0])) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   onClickFact() {
     if (!this.value.includes(this.sentence[0])) {
