@@ -90,10 +90,11 @@ export default class BasicCollector extends Vue {
 
   onSubmit(answer: string, note: string) {
     console.log(this.selectedFacts, answer, note);
+    this.randomQuestion(true);
   }
 
   onSkip(note: string) {
-    return 0;
+    this.randomQuestion(true);
   }
 
   goto() {

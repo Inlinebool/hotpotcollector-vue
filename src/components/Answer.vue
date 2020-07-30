@@ -3,10 +3,10 @@
     <v-card-text>
       <v-container>
         <v-row>
-          <v-text-field label="Answer" v-model="answer" outlined></v-text-field>
+          <v-text-field label="Answer" v-model="answer" outlined clearable></v-text-field>
         </v-row>
         <v-row>
-          <v-textarea name="Note" label="Note" v-model="note" outlined></v-textarea>
+          <v-textarea name="Note" label="Note" v-model="note" outlined clearable></v-textarea>
         </v-row>
         <v-row>
           <v-col>
@@ -35,10 +35,17 @@ export default class Answer extends Vue {
 
   onSubmit() {
     this.$emit("submit", this.answer, this.note);
+    this.clear();
   }
 
   onSkip() {
     this.$emit("skip", this.note);
+    this.clear();
+  }
+
+  clear() {
+    this.answer = "";
+    this.note = "";
   }
 }
 </script>
