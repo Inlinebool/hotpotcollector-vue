@@ -9,13 +9,13 @@
         solo
         label="Question Index: "
         append-icon="mdi-arrow-right-bold"
-        :value="questionIdx"
+        v-model="gotoIdx"
         @click:append="goto"
       ></v-text-field>
       <v-btn class="mr-2" small @click="randomQuestion">
         <v-icon>mdi-shuffle-variant</v-icon>
       </v-btn>
-      <v-btn class="mr-2" small>
+      <v-btn class="mr-2" small @click="backup">
         <v-icon>mdi-backup-restore</v-icon>
       </v-btn>
     </v-toolbar>
@@ -52,9 +52,8 @@ import Answer from "../components/Answer.vue";
 import SelectedFactHint from "../components/SelectedFactHint.vue";
 import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
-import { Watch } from "vue-property-decorator";
 import axios, { AxiosResponse } from "axios";
-import Datum, { Paragraph } from "../Datum";
+import Datum from "../Datum";
 
 @Component({
   components: {
@@ -62,32 +61,26 @@ import Datum, { Paragraph } from "../Datum";
     Context,
     Answer,
     QuestionSelect,
-    SelectedFactHint
-  }
+    SelectedFactHint,
+  },
 })
 export default class BasicCollector extends Vue {
   name = BasicCollector;
   datum = {} as Datum;
-  questionIdx = -1;
   selectedFacts = [];
+  gotoIdx = -1;
+  previousIndices = [] as number[];
   created() {
-    // axios.get(process.env.VUE_APP_API_URL + "/question", {}).then(
-    //   function(this: BasicCollector, response: AxiosResponse) {
-    //     this.datum = response.data.data;
-    //     this.questionIdx = response.data.idx;
-    //     console.log(this.datum);
-    //   }.bind(this)
-    // );
-    this.randomQuestion();
+    this.randomQuestion(true);
   }
   get question() {
     return this.datum["question"];
   }
   get context() {
-    return this.datum["numbered_context"];
+    return this.datum["context"];
   }
   get contextFlattened() {
-    return this.datum["numbered_context_flattened"];
+    return this.datum["flattened_context"];
   }
 
   onSubmit(answer: string, note: string) {
@@ -99,18 +92,47 @@ export default class BasicCollector extends Vue {
   }
 
   goto() {
-    return 0;
+    this.indexedQuestion(this.gotoIdx, true);
   }
 
-  randomQuestion() {
-    axios.get(process.env.VUE_APP_API_URL + "/question", {}).then(
-      function(this: BasicCollector, response: AxiosResponse) {
-        this.datum = response.data.data;
-        this.questionIdx = response.data.idx;
-        console.log(this.datum);
-      }.bind(this)
-    );
+  backup() {
+    console.log(this.previousIndices);
+    if (this.previousIndices.length) {
+      this.indexedQuestion(this.previousIndices.pop() as number, false);
+    }
+  }
+
+  indexedQuestion(idx: number, save: boolean) {
+    axios
+      .get(process.env.VUE_APP_API_URL + "/question", {
+        params: { idx: idx },
+      })
+      .then(
+        function (this: BasicCollector, response: AxiosResponse) {
+          this.newQuestion(response.data, save);
+        }.bind(this)
+      );
+  }
+
+  randomQuestion(save: boolean) {
+    axios
+      .get(process.env.VUE_APP_API_URL + "/question", {
+        params: { user: "anon", easy: true, medium: true, hard: true },
+      })
+      .then(
+        function (this: BasicCollector, response: AxiosResponse) {
+          this.newQuestion(response.data, save);
+        }.bind(this)
+      );
+  }
+
+  newQuestion(datum: Datum, save: boolean) {
+    if (this.datum.idx && save) {
+      this.previousIndices.push(this.datum.idx);
+    }
+    this.datum = datum;
     this.selectedFacts = [];
+    this.gotoIdx = this.datum.idx;
   }
 }
 </script>

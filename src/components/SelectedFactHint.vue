@@ -34,7 +34,7 @@ export default class SelecteFactHint extends Vue {
     this.value.forEach(idx =>
       selectedSentences.push([
         this.contextFlattened[idx - 1][0],
-        this.contextFlattened[idx - 1][2]
+        this.contextFlattened[idx - 1][1]
       ])
     );
     return selectedSentences;

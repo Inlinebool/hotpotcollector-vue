@@ -50,6 +50,8 @@ export default class Context extends Vue {
 
   @Watch("context")
   onContextChanged() {
+    // this.expandAll();
+    this.collapseAll();
     this.expandAll();
   }
 
@@ -63,17 +65,5 @@ export default class Context extends Vue {
   collapseAll() {
     this.openedParagraphs = [];
   }
-  // onFactClicked(idx: number, value: boolean) {
-  //   if (value) {
-  //     this.value.push(idx);
-  //   } else {
-  //     this.value = this.value.filter(factIdx => factIdx != idx);
-  //   }
-  //   this.$emit("input", this.value);
-  // }
-
-  // updated() {
-  //   console.log(this.context);
-  // }
 }
 </script>

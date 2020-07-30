@@ -1,22 +1,23 @@
 export default interface Datum {
+  idx: number;
   question: string;
-  numbered_context: Paragraph[];
-  numbered_context_flattened: FlattenedNumberedSentence[];
+  context: Paragraph[];
+  flattened_context: FlattenedNumberedSentence[];
 }
 
 export interface NumberedSentence {
-  0: number;
-  1: string;
+  0: number; // index
+  1: string; // sentence
 }
 
 export interface FlattenedNumberedSentence {
-  0: number;
-  1: string;
-  2: string;
+  0: number; // index
+  1: string; // sentence
+  2: string; // title
 }
 
 export interface Paragraph {
-  0: string;
+  0: string; // title
   1: NumberedSentence[];
 }
 
