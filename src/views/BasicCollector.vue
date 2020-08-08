@@ -28,8 +28,11 @@
         </v-row>
         <v-row>
           <v-col cols="8">
-            <Context
+            <component
+              v-bind:is="contextComponent"
               :context="context"
+              :contextFlattened="contextFlattened"
+              :contextRanked="contextRanked"
               v-model="selectedFacts"
               @searchStringChanged="updateSearchString"
             />
@@ -57,7 +60,7 @@ import SelectedFactHint from "../components/SelectedFactHint.vue";
 import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum, { ParagraphHitStatus } from "../Datum";
+import Datum, { ParagraphHitStatus, FlattenedNumberedSentence } from "../Datum";
 
 @Component({
   components: {
@@ -69,12 +72,14 @@ import Datum, { ParagraphHitStatus } from "../Datum";
   },
 })
 export default class BasicCollector extends Vue {
-  name = BasicCollector;
+  name = "BasicCollector";
   datum = {} as Datum;
   selectedFacts = [];
   gotoIdx = -1;
   previousIndices = [] as number[];
   searchString = "" as string;
+  contextComponent = "Context"
+  contextRanked = [] as FlattenedNumberedSentence[];
   created() {
     this.randomQuestion(true);
   }
@@ -94,6 +99,7 @@ export default class BasicCollector extends Vue {
   }
 
   onSkip(note: string) {
+    console.log(note);
     this.randomQuestion(true);
   }
 

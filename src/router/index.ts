@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import BasicCollector from '../views/BasicCollector.vue'
+import RankedCollector from '../views/RankedCollector.vue'
 
 Vue.use(VueRouter)
 
-  const routes: Array<RouteConfig> = [
+const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'BasicCollector',
     component: BasicCollector
   },
+  {
+    path: '/ranked',
+    name: 'Ranked',
+    component: RankedCollector
+  }
   // {
   //   path: '/about',
   //   name: 'About',

@@ -37,7 +37,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import ParagraphPanel from "./ParagraphPanel.vue";
 import { Prop, Watch } from "vue-property-decorator";
-import { Paragraph, searchParagraph, ParagraphHitStatus } from "../Datum";
+import {
+  Paragraph,
+  searchParagraph,
+  ParagraphHitStatus,
+  FlattenedNumberedSentence,
+} from "../Datum";
 
 @Component({
   components: { ParagraphPanel },
@@ -48,6 +53,8 @@ export default class Context extends Vue {
   contextHitStatus = [] as ParagraphHitStatus[];
 
   @Prop(Array) readonly context!: Paragraph[];
+
+  @Prop(Array) readonly contextFlattened!: FlattenedNumberedSentence[];
 
   @Prop(Array)
   value!: number[];

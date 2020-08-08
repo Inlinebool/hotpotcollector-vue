@@ -26,6 +26,10 @@ export interface ParagraphHitStatus {
   hitSentences: number[];
 }
 
+export interface RankFactsResponse {
+  ranked_facts: FlattenedNumberedSentence[];
+}
+
 export function searchParagraph(paragraph: Paragraph, searchString: string) {
   if (!searchString) {
     return { hit: true, hitSentences: [] }

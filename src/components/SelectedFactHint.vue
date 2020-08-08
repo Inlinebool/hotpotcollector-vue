@@ -3,7 +3,7 @@
     <v-card-title>Selected Facts:</v-card-title>
     <v-card-text>
       <v-row v-for="sentence in selectedSentences" :key="sentence[0]" class="my-2">
-        <Sentence :sentence="sentence" v-model="value" />
+        <Sentence :sentence="sentence" v-model="value" :enabled="true"/>
       </v-row>
     </v-card-text>
   </v-card>
