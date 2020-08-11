@@ -25,6 +25,7 @@
           :key="paragraph[0]"
           :paragraph="paragraph"
           :hitStatus="contextHitStatus[index]"
+          :question="question"
           v-model="value"
         ></ParagraphPanel>
       </v-expansion-panels>
@@ -53,6 +54,8 @@ export default class Context extends Vue {
   contextHitStatus = [] as ParagraphHitStatus[];
 
   @Prop(Array) readonly context!: Paragraph[];
+
+  @Prop(String) readonly question!: string;
 
   @Prop(Array) readonly contextFlattened!: FlattenedNumberedSentence[];
 

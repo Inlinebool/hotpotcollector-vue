@@ -31,6 +31,7 @@
             <component
               v-bind:is="contextComponent"
               :context="context"
+              :question="question"
               :contextFlattened="contextFlattened"
               :contextRanked="contextRanked"
               v-model="selectedFacts"

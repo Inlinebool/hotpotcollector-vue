@@ -1,15 +1,6 @@
 <template>
   <v-hover v-slot:default="{ hover }">
-    <v-container>
-      <v-row>
-        <v-btn
-          v-if="sentence[2]"
-          class="font-italic text-decoration-underline"
-          @click="onClickTitle"
-          text
-          small
-        >({{ sentence[2] }})</v-btn>
-      </v-row>
+    <v-container class="pb-0">
       <v-row>
         <v-card
           :elevation="hover ? 2 : 0"
@@ -23,19 +14,31 @@
           <span class="mr-2">
             <span>
               <span>[ {{ sentence[0] }} ]</span>
-              <span>{{ sentence[1] }}</span>
+              <span>{{ highlightedSentence }}</span>
             </span>
-            <v-expand-transition v-if="sentence[2]">
-              <v-card v-show="expand" width="70%" class="mx-auto">
-                <v-card-text>
-                  <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
-                    <Sentence :sentence="sentence" v-model="value" :enabled="true" />
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </v-expand-transition>
           </span>
         </v-card>
+      </v-row>
+      <v-row v-if="sentence[2]" class="mx-0 pb-1">
+        <v-row>
+          <v-btn
+            class="font-italic text-decoration-underline"
+            @click="onClickTitle"
+            text
+            small
+          >({{ sentence[2] }})</v-btn>
+        </v-row>
+        <v-row>
+          <v-expand-transition v-if="sentence[2]">
+            <v-card v-show="expand" width="70%" class="mx-10">
+              <v-card-text>
+                <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
+                  <Sentence :sentence="sentence" v-model="value" :enabled="true" />
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-expand-transition>
+        </v-row>
       </v-row>
     </v-container>
   </v-hover>
@@ -51,6 +54,7 @@ import {
   Paragraph,
   FlattenedNumberedSentence,
 } from "../Datum";
+import sw from "stopword";
 
 @Component
 export default class Sentence extends Vue {
@@ -66,6 +70,10 @@ export default class Sentence extends Vue {
   @Prop(Object) readonly hitStatus!: ParagraphHitStatus;
 
   @Prop(Boolean) readonly enabled!: boolean;
+
+  @Prop(String) readonly question!: string;
+
+  @Prop(String) readonly searchQuery!: string;
 
   expand = false;
 
@@ -103,6 +111,28 @@ export default class Sentence extends Vue {
     } else {
       return false;
     }
+  }
+
+  get highlightedSentence() {
+    let highlightedSentence = this.sentence[1];
+    // hightlight question
+    if (this.question) {
+      let questionWords = this.question.split(/\W+/);
+      questionWords = sw.removeStopwords(questionWords);
+      console.log(questionWords);
+
+      for (const word of questionWords) {
+        if (!word) {
+          continue;
+        }
+        const reg = new RegExp(word);
+        highlightedSentence = highlightedSentence.replace(
+          reg,
+          "<question>$&</question>"
+        );
+      }
+    }
+    return highlightedSentence;
   }
 
   onClickFact() {

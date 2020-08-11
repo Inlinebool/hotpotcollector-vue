@@ -3,7 +3,7 @@
     <v-expansion-panel-header>{{ paragraph[0] }}</v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
-        <Sentence :sentence="sentence" v-model="value" :hitStatus="hitStatus" :enabled="true" />
+        <Sentence :sentence="sentence" v-model="value" :hitStatus="hitStatus" :enabled="true" :question="question"/>
       </v-row>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -25,6 +25,8 @@ export default class ParagraphPanel extends Vue {
   name = "ParagraphPanel";
 
   @Prop(Array) readonly paragraph: Paragraph | undefined;
+
+  @Prop(String) readonly question!: string;
 
   @Prop(Array)
   value!: number[];
