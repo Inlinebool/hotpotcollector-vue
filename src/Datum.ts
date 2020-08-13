@@ -30,6 +30,30 @@ export interface RankFactsResponse {
   ranked_facts: FlattenedNumberedSentence[];
 }
 
+export interface AnswerSubmit {
+  user: string;
+  levels: {
+    easy: boolean;
+    medium: boolean;
+    hard: boolean;
+  };
+  data: AnswerData;
+}
+
+export interface AnswerData {
+  idx: number;
+  answer: string;
+  notes: string;
+  supportingFacts: number[];
+  operationRecord: OperationRecord[];
+}
+
+export interface OperationRecord {
+  name: string;
+  data: any;
+  time: number;
+}
+
 export function searchContext(context: Paragraph[], searchQuery: string) {
   const hitStatus = { hitParagraphs: [], highlightedSentences: [] } as HitStatus;
   if (!searchQuery) {

@@ -55,10 +55,6 @@ export default class Context extends Vue {
     return this.$store.state.datum.context as Paragraph[];
   }
 
-  get question() {
-    return this.$store.state.datum.question as string;
-  }
-
   get contextFlattened() {
     return this.$store.state.datum[
       "flattened_context"
@@ -73,7 +69,6 @@ export default class Context extends Vue {
 
   @Watch("context")
   onContextChanged() {
-    console.log(this.context);
     setTimeout(this.expandAll, 200);
   }
 
@@ -98,7 +93,6 @@ export default class Context extends Vue {
   }
 
   searchQueryChanged() {
-    console.log(this.hitStatus);
     this.expandHit();
   }
 }

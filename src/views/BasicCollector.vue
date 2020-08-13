@@ -54,6 +54,7 @@ import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
 import Datum, { FlattenedNumberedSentence } from "../Datum";
+import Axios from "axios";
 
 @Component({
   components: {
@@ -90,17 +91,38 @@ export default class BasicCollector extends Vue {
   }
 
   onSubmit() {
-    console.log(
-      this.selectedFacts,
-      this.$store.state.answer,
-      this.$store.state.note
-    );
-    this.randomQuestion(true);
+    axios
+      .post(
+        process.env.VUE_APP_API_URL + "/answer",
+        this.$store.getters.answerSubmitData
+      )
+      .then(
+        function (this: BasicCollector, response: AxiosResponse) {
+          if (response.data.success == true) {
+            this.randomQuestion(true);
+          } else {
+            alert(response.data);
+          }
+        }.bind(this)
+      );
   }
 
   onSkip(note: string) {
-    console.log(note);
-    this.randomQuestion(true);
+    this.$store.commit("setAnswer", "");
+    axios
+      .post(
+        process.env.VUE_APP_API_URL + "/answer",
+        this.$store.getters.answerSubmitData
+      )
+      .then(
+        function (this: BasicCollector, response: AxiosResponse) {
+          if (response.data.success == true) {
+            this.randomQuestion(true);
+          } else {
+            alert(response.data);
+          }
+        }.bind(this)
+      );
   }
 
   goto() {
