@@ -1,1 +1,1 @@
-declare module "stopword"
+declare module "stopword";

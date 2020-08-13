@@ -24,6 +24,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import store from "./store";
 
 export default Vue.extend({
   name: "App",
@@ -32,8 +33,10 @@ export default Vue.extend({
 
   data: () => ({
     //
-    fab: false
+    fab: false,
   }),
+
+  store,
 
   methods: {
     onScroll(e: { target: { scrollTop: any } }) {
@@ -43,7 +46,7 @@ export default Vue.extend({
     },
     toTop() {
       this.$vuetify.goTo(0);
-    }
-  }
+    },
+  },
 });
 </script>

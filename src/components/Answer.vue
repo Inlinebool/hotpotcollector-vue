@@ -29,17 +29,29 @@ import Component from "vue-class-component";
 export default class Answer extends Vue {
   name = "Answer";
 
-  answer = "";
+  get answer() {
+    return this.$store.state.answer as string;
+  }
 
-  note = "";
+  set answer(value) {
+    this.$store.commit("setAnswer", value);
+  }
+
+  get note() {
+    return this.$store.state.note as string;
+  }
+
+  set note(value) {
+    this.$store.commit("setNote", value);
+  }
 
   onSubmit() {
-    this.$emit("submit", this.answer, this.note);
+    this.$emit("submit");
     this.clear();
   }
 
   onSkip() {
-    this.$emit("skip", this.note);
+    this.$emit("skip");
     this.clear();
   }
 

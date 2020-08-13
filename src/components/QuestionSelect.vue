@@ -28,11 +28,5 @@ import Component from "vue-class-component";
 @Component
 export default class QuestionSelect extends Vue {
   name = "QuestionSelect";
-
-  // @Prop(Array) readonly context: [] | undefined;
-
-  // created() {
-  //   console.log(this.context);
-  // }
 }
 </script>

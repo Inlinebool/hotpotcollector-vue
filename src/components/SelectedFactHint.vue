@@ -3,7 +3,7 @@
     <v-card-title>Selected Facts:</v-card-title>
     <v-card-text>
       <v-row v-for="sentence in selectedSentences" :key="sentence[0]" class="my-2">
-        <Sentence :sentence="sentence" v-model="value" :enabled="true"/>
+        <Sentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="false" />
       </v-row>
     </v-card-text>
   </v-card>
@@ -13,30 +13,35 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
-import { Prop } from "vue-property-decorator";
 import { FlattenedNumberedSentence, NumberedSentence } from "../Datum";
 
 @Component({
   components: {
-    Sentence
-  }
+    Sentence,
+  },
 })
 export default class SelecteFactHint extends Vue {
   name = "SelecteFactHint";
 
-  @Prop(Array) readonly contextFlattened!: FlattenedNumberedSentence[];
+  get contextFlattened() {
+    return this.$store.state.datum[
+      "flattened_context"
+    ] as FlattenedNumberedSentence[];
+  }
 
-  @Prop(Array)
-  value!: number[];
+  get selectedFacts() {
+    return this.$store.state.selectedFacts as number[];
+  }
 
   get selectedSentences() {
     const selectedSentences = [] as NumberedSentence[];
-    this.value.forEach(idx =>
-      selectedSentences.push([
-        this.contextFlattened[idx - 1][0],
-        this.contextFlattened[idx - 1][1]
-      ])
-    );
+    this.selectedFacts.forEach((idx) => {
+      for (let i = 0; i < this.contextFlattened.length; i++) {
+        if (idx == this.contextFlattened[i][0]) {
+          selectedSentences.push(this.contextFlattened[i]);
+        }
+      }
+    });
     return selectedSentences;
   }
 }

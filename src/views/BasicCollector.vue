@@ -28,19 +28,11 @@
         </v-row>
         <v-row>
           <v-col cols="8">
-            <component
-              v-bind:is="contextComponent"
-              :context="context"
-              :question="question"
-              :contextFlattened="contextFlattened"
-              :contextRanked="contextRanked"
-              v-model="selectedFacts"
-              @searchStringChanged="updateSearchString"
-            />
+            <component v-bind:is="contextComponent" />
           </v-col>
           <v-col cols="4">
             <v-row>
-              <SelectedFactHint :contextFlattened="contextFlattened" v-model="selectedFacts" />
+              <SelectedFactHint :contextFlattened="contextFlattened" />
             </v-row>
             <v-row>
               <Answer @submit="onSubmit" @skip="onSkip" />
@@ -61,7 +53,7 @@ import SelectedFactHint from "../components/SelectedFactHint.vue";
 import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum, { ParagraphHitStatus, FlattenedNumberedSentence } from "../Datum";
+import Datum, { FlattenedNumberedSentence } from "../Datum";
 
 @Component({
   components: {
@@ -74,15 +66,15 @@ import Datum, { ParagraphHitStatus, FlattenedNumberedSentence } from "../Datum";
 })
 export default class BasicCollector extends Vue {
   name = "BasicCollector";
-  datum = {} as Datum;
-  selectedFacts = [];
   gotoIdx = -1;
   previousIndices = [] as number[];
   searchString = "" as string;
-  contextComponent = "Context"
-  contextRanked = [] as FlattenedNumberedSentence[];
+  contextComponent = "Context";
   created() {
     this.randomQuestion(true);
+  }
+  get datum() {
+    return this.$store.state.datum as Datum;
   }
   get question() {
     return this.datum["question"];
@@ -93,9 +85,16 @@ export default class BasicCollector extends Vue {
   get contextFlattened() {
     return this.datum["flattened_context"];
   }
+  get selectedFacts() {
+    return this.$store.state.selectedFacts as number[];
+  }
 
-  onSubmit(answer: string, note: string) {
-    console.log(this.selectedFacts, answer, note);
+  onSubmit() {
+    console.log(
+      this.selectedFacts,
+      this.$store.state.answer,
+      this.$store.state.note
+    );
     this.randomQuestion(true);
   }
 
@@ -139,20 +138,11 @@ export default class BasicCollector extends Vue {
   }
 
   newQuestion(datum: Datum, save: boolean) {
-    if (this.datum.idx && save) {
+    if (this.datum.idx && this.datum.idx != -1 && save) {
       this.previousIndices.push(this.datum.idx);
     }
-    this.datum = datum;
-    this.selectedFacts = [];
-    this.gotoIdx = this.datum.idx;
-  }
-
-  updateSearchString(
-    searchString: string,
-    contextHitStatus: ParagraphHitStatus[]
-  ) {
-    this.searchString = searchString;
-    console.log(contextHitStatus);
+    this.$store.commit("setDatum", datum);
+    this.gotoIdx = datum.idx;
   }
 }
 </script>

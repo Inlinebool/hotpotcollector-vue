@@ -10,8 +10,8 @@
         label="Search: "
         prepend-icon="mdi-magnify"
         clearable
-        v-model="searchString"
-        @input="searchStringChanged"
+        v-model="searchQuery"
+        @input="searchQueryChanged"
       ></v-text-field>
       <v-spacer />
       <v-btn class="mr-2" small @click="expandHit">Expand Hit</v-btn>
@@ -23,10 +23,7 @@
         <ParagraphPanel
           v-for="(paragraph, index) in context"
           :key="paragraph[0]"
-          :paragraph="paragraph"
-          :hitStatus="contextHitStatus[index]"
-          :question="question"
-          v-model="value"
+          :paragraphNumber="index"
         ></ParagraphPanel>
       </v-expansion-panels>
     </v-card-text>
@@ -38,38 +35,45 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import ParagraphPanel from "./ParagraphPanel.vue";
 import { Prop, Watch } from "vue-property-decorator";
-import {
-  Paragraph,
-  searchParagraph,
-  ParagraphHitStatus,
-  FlattenedNumberedSentence,
-} from "../Datum";
+import { Paragraph, FlattenedNumberedSentence, HitStatus } from "../Datum";
 
 @Component({
   components: { ParagraphPanel },
 })
 export default class Context extends Vue {
   name = "Context";
-  searchString = "";
-  contextHitStatus = [] as ParagraphHitStatus[];
 
-  @Prop(Array) readonly context!: Paragraph[];
+  get searchQuery() {
+    return this.$store.state.searchQuery as string;
+  }
 
-  @Prop(String) readonly question!: string;
+  set searchQuery(value) {
+    this.$store.commit("setSearchQuery", value);
+  }
 
-  @Prop(Array) readonly contextFlattened!: FlattenedNumberedSentence[];
+  get context() {
+    return this.$store.state.datum.context as Paragraph[];
+  }
 
-  @Prop(Array)
-  value!: number[];
+  get question() {
+    return this.$store.state.datum.question as string;
+  }
+
+  get contextFlattened() {
+    return this.$store.state.datum[
+      "flattened_context"
+    ] as FlattenedNumberedSentence[];
+  }
+
+  get hitStatus() {
+    return this.$store.getters.hitStatus as HitStatus;
+  }
 
   openedParagraphs = [] as number[];
 
   @Watch("context")
   onContextChanged() {
-    this.contextHitStatus = [];
-    for (let i = 0; i < this.context.length; i++) {
-      this.contextHitStatus.push({ hit: true, hitSentences: [] });
-    }
+    console.log(this.context);
     setTimeout(this.expandAll, 200);
   }
 
@@ -86,22 +90,16 @@ export default class Context extends Vue {
 
   expandHit() {
     this.openedParagraphs = [];
-    for (let i = 0; i < this.contextHitStatus.length; i++) {
-      if (this.contextHitStatus[i].hit) {
-        this.openedParagraphs.push(i);
+    this.context.forEach((paragraph, index) => {
+      if (this.hitStatus.hitParagraphs.includes(paragraph[0])) {
+        this.openedParagraphs.push(index);
       }
-    }
+    });
   }
 
-  searchStringChanged() {
-    this.context.forEach((paragraph, index) => {
-      const result = searchParagraph(paragraph, this.searchString);
-      this.contextHitStatus[index] = result;
-    });
-
+  searchQueryChanged() {
+    console.log(this.hitStatus);
     this.expandHit();
-
-    this.$emit("searchStringChanged", this.searchString, this.contextHitStatus);
   }
 }
 </script>

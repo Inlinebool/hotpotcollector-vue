@@ -4,7 +4,7 @@ import BasicCollector from "./BasicCollector.vue";
 import RankedContext from "../components/RankedContext.vue";
 import axios, { AxiosResponse } from "axios";
 import Datum, { RankFactsResponse } from "@/Datum";
-import { Watch } from 'vue-property-decorator';
+import { Watch } from "vue-property-decorator";
 
 @Component({
   components: {
@@ -15,15 +15,12 @@ export default class RankedCollector extends BasicCollector {
   name = "RankedCollector";
   contextComponent = "RankedContext";
 
-  contextRanked = this.contextFlattened;
-
   newQuestion(datum: Datum, save: boolean) {
-    if (this.datum.idx && save) {
+    if (this.datum.idx && this.datum.idx != -1 && save) {
       this.previousIndices.push(this.datum.idx);
     }
-    this.datum = datum;
-    this.selectedFacts = [];
-    this.gotoIdx = this.datum.idx;
+    this.$store.commit("setDatum", datum);
+    this.gotoIdx = datum.idx;
     this.getRankedContext();
   }
 
@@ -40,7 +37,7 @@ export default class RankedCollector extends BasicCollector {
       .then(
         function (this: BasicCollector, response: AxiosResponse) {
           const rankResponse = response.data as RankFactsResponse;
-          this.contextRanked = rankResponse.ranked_facts;
+          this.$store.commit("updateRankedFacts", rankResponse.ranked_facts);
         }.bind(this)
       );
   }

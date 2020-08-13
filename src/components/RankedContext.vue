@@ -10,8 +10,7 @@
         label="Search: "
         prepend-icon="mdi-magnify"
         clearable
-        v-model="searchString"
-        @input="searchStringChanged"
+        v-model="searchQuery"
       ></v-text-field>
       <v-spacer />
       <!-- <v-btn class="mr-2" small @click="expandHit">Expand Hit</v-btn>
@@ -48,15 +47,11 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-row v-for="sentence in enabledFacts" :key="sentence[0]" class="my-2">
-        <Sentence
-          :sentence="sentence"
-          :context="context"
-          v-model="value"
-          :hitStatus="sentenceHitStatus"
-          :enabled="enabledParagraphs.includes(sentence[2])"
-        />
-      </v-row>
+      <transition-group name="sentence-transition" tag="p">
+        <v-row v-for="sentence in enabledFacts" :key="sentence[0]" class="my-2 sentence-item">
+          <Sentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="true" />
+        </v-row>
+      </transition-group>
     </v-card-text>
   </v-card>
 </template>
@@ -65,30 +60,36 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
-import { Prop, Watch } from "vue-property-decorator";
-import {
-  FlattenedNumberedSentence,
-  Paragraph,
-  ParagraphHitStatus,
-} from "../Datum";
+import { Watch } from "vue-property-decorator";
+import { FlattenedNumberedSentence, Paragraph, HitStatus } from "../Datum";
 
 @Component({
   components: { Sentence },
 })
 export default class RankedContext extends Vue {
   name = "RankedContext";
-  searchString = "";
 
-  @Prop(Array) readonly context!: Paragraph[];
+  get context() {
+    return this.$store.state.datum.context as Paragraph[];
+  }
 
-  @Prop(Array) readonly contextFlattened!: FlattenedNumberedSentence[];
+  get contextFlattened() {
+    return this.$store.state.datum[
+      "flattened_context"
+    ] as FlattenedNumberedSentence[];
+  }
 
-  @Prop(Array) readonly contextRanked!: FlattenedNumberedSentence[];
+  get searchQuery() {
+    return this.$store.state.searchQuery as string;
+  }
 
-  @Prop(Array)
-  value!: number[];
+  set searchQuery(value) {
+    this.$store.commit("setSearchQuery", value);
+  }
 
-  sentenceHitStatus = { hit: false, hitSentences: [] } as ParagraphHitStatus;
+  get hitStatus() {
+    return this.$store.getters.hitStatus as HitStatus;
+  }
 
   enabledParagraphs = [] as string[];
 
@@ -97,23 +98,16 @@ export default class RankedContext extends Vue {
   @Watch("context")
   onContextChanged() {
     this.enabledParagraphs = [] as string[];
-    this.context.forEach((paragraph) => {
-      this.enabledParagraphs.push(paragraph[0]);
-    });
+    if (this.context) {
+      this.context.forEach((paragraph) => {
+        this.enabledParagraphs.push(paragraph[0]);
+      });
+    }
+
     this.selectAll = true;
   }
 
-  // @Watch("enabledParagraphs")
-  // onEnabledParagraphsChanged() {
-  //   if (this.enabledParagraphs.length == this.context.length) {
-  //     this.selectAll = true;
-  //   } else {
-  //     this.selectAll = false;
-  //   }
-  // }
-
   toggleSelectAll() {
-    console.log(this.selectAll);
     if (this.selectAll) {
       this.enabledParagraphs = [] as string[];
       this.context.forEach((paragraph) => {
@@ -126,29 +120,31 @@ export default class RankedContext extends Vue {
 
   get enabledFacts() {
     const enabledFacts = [] as FlattenedNumberedSentence[];
-    this.contextRanked.forEach((fact) => {
-      if (this.enabledParagraphs.includes(fact[2])) {
-        enabledFacts.push(fact);
-      }
-    });
-    return enabledFacts;
-  }
+    if (this.contextFlattened) {
+      this.contextFlattened.forEach((fact) => {
+        if (this.enabledParagraphs.includes(fact[2])) {
+          enabledFacts.push(fact);
+        }
+      });
+    }
 
-  searchStringChanged() {
-    this.sentenceHitStatus.hitSentences = [];
-    this.contextRanked.forEach((sentence) => {
-      if (
-        this.searchString &&
-        sentence[1].toLowerCase().includes(this.searchString.toLowerCase())
-      ) {
-        this.sentenceHitStatus.hitSentences.push(sentence[0]);
-      }
-    });
-    this.$emit(
-      "searchStringChanged",
-      this.searchString,
-      this.sentenceHitStatus
-    );
+    return enabledFacts;
   }
 }
 </script>
+<style>
+.sentence-item {
+  transition: all 1s;
+}
+.sentence-transition-move {
+  transition: transform 1s;
+}
+.sentence-transition-enter,
+.sentence-transition-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.sentence-transition-active {
+  position: absolute;
+}
+</style>

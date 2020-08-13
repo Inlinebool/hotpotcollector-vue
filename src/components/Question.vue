@@ -6,7 +6,7 @@
           <div class="text-subtitle-1 mb-3" v-text="tooltip"></div>
         </v-row>
         <v-row>
-          <div class="text-h5 font-weight-bold" v-text="question"></div>
+          <div class="text-h5 font-weight-bold blue--text" v-text="question"></div>
         </v-row>
       </v-container>
     </v-card-text>
@@ -25,14 +25,8 @@ export default class Question extends Vue {
   tooltip =
     "For the following question, type in the correct answer based on the given paragraphs and click on the sentence that support your answer.";
 
-  @Prop(String) readonly question!: string;
-
-  goto() {
-    return 0;
+  get question() {
+    return this.$store.state.datum.question as string;
   }
-
-  // updated() {
-  //   console.log(this.question);
-  // }
 }
 </script>
