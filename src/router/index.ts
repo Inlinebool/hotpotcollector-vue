@@ -1,20 +1,26 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
-import BasicCollector from '../views/BasicCollector.vue'
-import RankedCollector from '../views/RankedCollector.vue'
+import Vue from 'vue';
+import VueRouter, { RouteConfig } from 'vue-router';
+import BasicCollector from '../views/BasicCollector.vue';
+import RankedCollector from '../views/RankedCollector.vue';
+import UserSelect from '../views/UserSelect.vue';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
+    path: '/basic',
     name: 'BasicCollector',
     component: BasicCollector
   },
   {
     path: '/ranked',
-    name: 'Ranked',
+    name: 'RankedCollector',
     component: RankedCollector
+  },
+  {
+    path: '/',
+    name: "UserSelect",
+    component: UserSelect
   }
   // {
   //   path: '/about',
@@ -24,12 +30,12 @@ const routes: Array<RouteConfig> = [
   //   // which is lazy-loaded when the route is visited.
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
-})
+});
 
-export default router
+export default router;

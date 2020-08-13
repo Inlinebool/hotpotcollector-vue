@@ -89,6 +89,12 @@ export default class BasicCollector extends Vue {
   get selectedFacts() {
     return this.$store.state.selectedFacts as number[];
   }
+  get user() {
+    return this.$store.state.user;
+  }
+  get levels() {
+    return this.$store.state.levels;
+  }
 
   onSubmit() {
     axios
@@ -98,7 +104,7 @@ export default class BasicCollector extends Vue {
       )
       .then(
         function (this: BasicCollector, response: AxiosResponse) {
-          if (response.data.success == true) {
+          if (response.data.success == "true") {
             this.randomQuestion(true);
           } else {
             alert(response.data);
@@ -116,7 +122,7 @@ export default class BasicCollector extends Vue {
       )
       .then(
         function (this: BasicCollector, response: AxiosResponse) {
-          if (response.data.success == true) {
+          if (response.data.success == "true") {
             this.randomQuestion(true);
           } else {
             alert(response.data);
@@ -150,7 +156,12 @@ export default class BasicCollector extends Vue {
   randomQuestion(save: boolean) {
     axios
       .get(process.env.VUE_APP_API_URL + "/question", {
-        params: { user: "anon", easy: true, medium: true, hard: true },
+        params: {
+          user: this.user,
+          easy: this.levels.easy,
+          medium: this.levels.medium,
+          hard: this.levels.hard,
+        },
       })
       .then(
         function (this: BasicCollector, response: AxiosResponse) {

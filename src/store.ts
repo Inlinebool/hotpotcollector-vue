@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import CollectorModel from "./CollectorModel";
-import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord } from "./Datum";
+import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord, Levels } from "./Datum";
 
 Vue.use(Vuex);
 
@@ -44,11 +44,7 @@ export default new Vuex.Store({
     setUser(state, user: string) {
       state.user = user;
     },
-    setLevels(state, levels: {
-      easy: boolean;
-      medium: boolean;
-      hard: boolean;
-    }) {
+    setLevels(state, levels: Levels) {
       state.levels = levels;
     },
     setDatum(state, datum: Datum) {

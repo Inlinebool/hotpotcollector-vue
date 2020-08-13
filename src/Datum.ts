@@ -23,7 +23,11 @@ export interface Paragraph {
 
 export interface HitStatus {
   hitParagraphs: string[];
-  highlightedSentences: { [sentenceNumber: number]: string };
+  highlightedSentences: HighlightedSentences;
+}
+
+export interface HighlightedSentences {
+  [sentenceNumber: number]: string;
 }
 
 export interface RankFactsResponse {
@@ -32,12 +36,15 @@ export interface RankFactsResponse {
 
 export interface AnswerSubmit {
   user: string;
-  levels: {
-    easy: boolean;
-    medium: boolean;
-    hard: boolean;
-  };
+  levels: Levels;
   data: AnswerData;
+}
+
+export interface Levels {
+  easy: boolean;
+  medium: boolean;
+  hard: boolean;
+  [levelName: string]: boolean;
 }
 
 export interface AnswerData {
