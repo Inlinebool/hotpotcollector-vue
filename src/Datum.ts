@@ -63,24 +63,28 @@ export interface OperationRecord {
 
 export function searchContext(context: Paragraph[], searchQuery: string) {
   const hitStatus = { hitParagraphs: [], highlightedSentences: [] } as HitStatus;
-  if (!searchQuery) {
+  if (!searchQuery || !(searchQuery.trim())) {
+    if (!context) {
+      return hitStatus;
+    }
     context.forEach(paragraph => {
       hitStatus.hitParagraphs.push(paragraph[0]);
     });
     return hitStatus;
   }
+  const query = searchQuery.trim();
   context.forEach(paragraph => {
     let hit = false;
-    const query = new RegExp(searchQuery, 'gi');
+    const queryReg = new RegExp(query, 'gi');
     if (paragraph[0].search(query) != -1) {
       hit = true;
     }
     paragraph[1].forEach(numberedSentence => {
-      if (numberedSentence[1].search(query) == -1) {
+      if (numberedSentence[1].search(queryReg) == -1) {
         hitStatus.highlightedSentences[numberedSentence[0]] = numberedSentence[1];
       } else {
         hit = true;
-        hitStatus.highlightedSentences[numberedSentence[0]] = numberedSentence[1].replace(query, "<span class=\"searchHit\">$&</span>");
+        hitStatus.highlightedSentences[numberedSentence[0]] = numberedSentence[1].replace(queryReg, "<span class=\"searchHit\">$&</span>");
       }
     });
     if (hit) {

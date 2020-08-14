@@ -122,7 +122,10 @@ export default class RankedContext extends Vue {
     const enabledFacts = [] as FlattenedNumberedSentence[];
     if (this.contextFlattened) {
       this.contextFlattened.forEach((fact) => {
-        if (this.enabledParagraphs.includes(fact[2])) {
+        if (
+          this.enabledParagraphs.includes(fact[2]) &&
+          this.hitStatus.highlightedSentences[fact[0]] != fact[1]
+        ) {
           enabledFacts.push(fact);
         }
       });
@@ -134,13 +137,12 @@ export default class RankedContext extends Vue {
 </script>
 <style>
 .sentence-item {
-  transition: all 1s;
+  transition: all 0.5s;
 }
 .sentence-transition-move {
-  transition: transform 1s;
+  transition: transform 0.5s;
 }
-.sentence-transition-enter,
-.sentence-transition-leave-to {
+.sentence-transition-enter, .sentence-transition-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }

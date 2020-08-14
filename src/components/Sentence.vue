@@ -20,7 +20,7 @@
           <v-overlay absolute class="justify-start" opacity="0">
             <span class="mr-2">
               <span class="no-text">
-                <span :class="{'deep-purple lighten-4': selected}">{{sentenceNumberText}}</span>
+                <span :class="{'purple lighten-5': selected}">{{sentenceNumberText}}</span>
                 <span v-html="selectedHighlighted" :class="{'selected': selected}" class="ml-1"></span>
               </span>
             </span>
@@ -200,15 +200,17 @@ export default class Sentence extends Vue {
 
 <style>
 .questionHighlight {
-  background-color: #90caf9;
+  background-color: #BBDEFB;
 }
 .searchHit {
   font-weight: 700;
+  font-style: italic;
+  color: #D81B60;
 }
-.selected,
-.selectedHighlight {
-  text-decoration: underline;
-  text-decoration-color: #9575cd;
+.selected, .selectedHighlight {
+  /* text-decoration: underline;
+  text-decoration-color: #9575cd; */
+  background-color: #F3E5F5;
 }
 .no-text {
   color: rgba(0, 0, 0, 0);
