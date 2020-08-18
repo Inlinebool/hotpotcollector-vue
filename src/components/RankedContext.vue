@@ -62,6 +62,7 @@ import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
 import { Watch } from "vue-property-decorator";
 import { FlattenedNumberedSentence, Paragraph, HitStatus } from "../Datum";
+import { NameReference } from "@/CollectorModel";
 
 @Component({
   components: { Sentence },
@@ -89,6 +90,23 @@ export default class RankedContext extends Vue {
 
   get hitStatus() {
     return this.$store.getters.hitStatus as HitStatus;
+  }
+
+  get rankedSentences() {
+    return this.$store.state.rankedSentences;
+  }
+
+  get reverseRankedSenteceIndices() {
+    const reverseRankedIndices = {} as NameReference;
+    for (const sentence of this.contextFlattened) {
+      for (let i = 0; i < this.rankedSentences.length; i++) {
+        if (this.rankedSentences[i] == sentence[0]) {
+          reverseRankedIndices[String(sentence[0])] = String(i);
+        }
+      }
+    }
+    console.log(this.reverseRankedSenteceIndices);
+    return reverseRankedIndices;
   }
 
   enabledParagraphs = [] as string[];
@@ -121,14 +139,15 @@ export default class RankedContext extends Vue {
   get enabledFacts() {
     const enabledFacts = [] as FlattenedNumberedSentence[];
     if (this.contextFlattened) {
-      this.contextFlattened.forEach((fact) => {
+      for (let i = 0; i < this.rankedSentences.length; i++) {
+        const fact = this.contextFlattened[this.rankedSentences[i] - 1];
         if (
           this.enabledParagraphs.includes(fact[2]) &&
           this.hitStatus.highlightedSentences[fact[0]] != fact[1]
         ) {
           enabledFacts.push(fact);
         }
-      });
+      }
     }
 
     return enabledFacts;
@@ -142,7 +161,8 @@ export default class RankedContext extends Vue {
 .sentence-transition-move {
   transition: transform 0.5s;
 }
-.sentence-transition-enter, .sentence-transition-leave-to {
+.sentence-transition-enter,
+.sentence-transition-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }

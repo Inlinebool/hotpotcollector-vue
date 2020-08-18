@@ -30,8 +30,17 @@ export interface HighlightedSentences {
   [sentenceNumber: number]: string;
 }
 
-export interface RankFactsResponse {
-  ranked_facts: FlattenedNumberedSentence[];
+export interface RankFactResponse {
+  ranked_fact_numbers: number[];
+}
+
+export interface RankParagraphResponse {
+  ranked_paragraphs: string[];
+}
+
+export interface ParagraphSimilarity {
+  0: string;
+  1: number;
 }
 
 export interface AnswerSubmit {

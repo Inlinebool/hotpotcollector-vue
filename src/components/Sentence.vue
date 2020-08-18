@@ -66,6 +66,7 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import { Paragraph, FlattenedNumberedSentence, HitStatus } from "../Datum";
 import sw from "stopword";
+import { NameReference } from "@/CollectorModel";
 
 @Component
 export default class Sentence extends Vue {
@@ -104,6 +105,10 @@ export default class Sentence extends Vue {
     return this.$store.getters.hitStatus as HitStatus;
   }
 
+  get sentenceReference() {
+    return this.$store.state.sentenceReference as NameReference;
+  }
+
   @Prop(Boolean) readonly enabled!: boolean;
 
   @Prop(Boolean) readonly showTitle!: boolean;
@@ -115,7 +120,7 @@ export default class Sentence extends Vue {
   expand = false;
 
   get sentenceNumberText() {
-    return "[ " + this.sentence[0] + " ]";
+    return "[" + this.sentenceReference[this.sentence[0]] + "]";
   }
 
   get searchHighlighted() {
@@ -200,17 +205,18 @@ export default class Sentence extends Vue {
 
 <style>
 .questionHighlight {
-  background-color: #BBDEFB;
+  background-color: #bbdefb;
 }
 .searchHit {
   font-weight: 700;
   font-style: italic;
-  color: #D81B60;
+  color: #d81b60;
 }
-.selected, .selectedHighlight {
+.selected,
+.selectedHighlight {
   /* text-decoration: underline;
   text-decoration-color: #9575cd; */
-  background-color: #F3E5F5;
+  background-color: #f3e5f5;
 }
 .no-text {
   color: rgba(0, 0, 0, 0);

@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import CollectorModel from "./CollectorModel";
-import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord, Levels } from "./Datum";
+import CollectorModel, { NameReference } from "./CollectorModel";
+import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord, Levels, ParagraphSimilarity } from "./Datum";
 
 Vue.use(Vuex);
 
@@ -11,7 +11,11 @@ export default new Vuex.Store({
     levels: { easy: true, medium: true, hard: true },
     datum: {} as Datum,
     answer: "", note: "",
-    selectedFacts: [],
+    rankedParagraphs: [] as ParagraphSimilarity[],
+    rankedSentences: [] as number[],
+    paragraphReference: {} as NameReference,
+    sentenceReference: {} as NameReference,
+    selectedFacts: [] as number[],
     searchQuery: "",
     startTime: -1,
     pausedTime: -1,
@@ -55,9 +59,23 @@ export default new Vuex.Store({
       state.pausedTime = 0;
       state.isPaused = false;
       state.operationRecords = [];
+      let letterCode = "A".charCodeAt(0);
+      for (const paragraph of state.datum.context) {
+        state.paragraphReference[paragraph[0]] = String.fromCharCode(letterCode);
+        for (let i = 0; i < paragraph[1].length; i++) {
+          state.sentenceReference[String(paragraph[1][i][0])] = String.fromCharCode(letterCode) + '-' + String(i + 1);
+        }
+        letterCode++;
+      }
     },
     updateRankedFacts(state, facts: FlattenedNumberedSentence[]) {
       state.datum["flattened_context"] = facts;
+    },
+    updateRankedFactNumbers(state, factNumbers: number[]) {
+      state.rankedSentences = factNumbers;
+    },
+    updateRankedParagraphs(state, paragraphs: ParagraphSimilarity[]) {
+      state.rankedParagraphs = paragraphs;
     },
     setAnswer(state, answer: string) {
       state.answer = answer;

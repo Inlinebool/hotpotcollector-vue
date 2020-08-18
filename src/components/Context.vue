@@ -21,8 +21,8 @@
     <v-card-text>
       <v-expansion-panels multiple v-model="openedParagraphs">
         <ParagraphPanel
-          v-for="(paragraph, index) in context"
-          :key="paragraph[0]"
+          v-for="(index) in rankedParagraphIndices"
+          :key="index"
           :paragraphNumber="index"
         ></ParagraphPanel>
       </v-expansion-panels>
@@ -35,7 +35,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import ParagraphPanel from "./ParagraphPanel.vue";
 import { Prop, Watch } from "vue-property-decorator";
-import { Paragraph, FlattenedNumberedSentence, HitStatus } from "../Datum";
+import {
+  Paragraph,
+  FlattenedNumberedSentence,
+  HitStatus,
+  ParagraphSimilarity,
+} from "../Datum";
+import { NameReference } from "@/CollectorModel";
 
 @Component({
   components: { ParagraphPanel },
@@ -53,6 +59,33 @@ export default class Context extends Vue {
 
   get context() {
     return this.$store.state.datum.context as Paragraph[];
+  }
+
+  get rankedParagraphIndices() {
+    const rankedParagraphs = this.$store.state
+      .rankedParagraphs as ParagraphSimilarity[];
+    const paragraphReference = this.$store.state
+      .paragraphReference as NameReference;
+    const rankedIndices = [] as number[];
+    for (const paragraph of rankedParagraphs) {
+      rankedIndices.push(
+        paragraphReference[paragraph[0]].charCodeAt(0) - "A".charCodeAt(0)
+      );
+    }
+    return rankedIndices;
+  }
+
+  get reverseRankedParagraphIndices() {
+    const rankedParagraphs = this.$store.state.rankedParagraphs as string[];
+    const reverseIndices = {} as NameReference;
+    for (const paragraph of this.context) {
+      for (let i = 0; i < rankedParagraphs.length; i++) {
+        if (rankedParagraphs[i][0] == paragraph[0]) {
+          reverseIndices[paragraph[0]] = String(i);
+        }
+      }
+    }
+    return reverseIndices;
   }
 
   get contextFlattened() {
@@ -85,9 +118,11 @@ export default class Context extends Vue {
 
   expandHit() {
     this.openedParagraphs = [];
-    this.context.forEach((paragraph, index) => {
+    this.context.forEach((paragraph) => {
       if (this.hitStatus.hitParagraphs.includes(paragraph[0])) {
-        this.openedParagraphs.push(index);
+        this.openedParagraphs.push(
+          Number(this.reverseRankedParagraphIndices[paragraph[0]])
+        );
       }
     });
   }

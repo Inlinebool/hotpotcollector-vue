@@ -53,7 +53,10 @@ import SelectedFactHint from "../components/SelectedFactHint.vue";
 import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum, { FlattenedNumberedSentence } from "../Datum";
+import Datum, {
+  FlattenedNumberedSentence,
+  RankParagraphResponse,
+} from "../Datum";
 import Axios from "axios";
 
 @Component({
@@ -176,6 +179,19 @@ export default class BasicCollector extends Vue {
     }
     this.$store.commit("setDatum", datum);
     this.gotoIdx = datum.idx;
+    axios
+      .get(process.env.VUE_APP_API_URL + "/rankparagraph", {
+        params: { idx: datum.idx },
+      })
+      .then(
+        function (this: BasicCollector, response: AxiosResponse) {
+          const rankedParagraphs = response.data as RankParagraphResponse;
+          this.$store.commit(
+            "updateRankedParagraphs",
+            rankedParagraphs.ranked_paragraphs
+          );
+        }.bind(this)
+      );
   }
 }
 </script>

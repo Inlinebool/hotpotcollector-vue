@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import BasicCollector from "./BasicCollector.vue";
 import RankedContext from "../components/RankedContext.vue";
 import axios, { AxiosResponse } from "axios";
-import Datum, { RankFactsResponse } from "@/Datum";
+import Datum, { RankFactResponse } from "@/Datum";
 import { Watch } from "vue-property-decorator";
 
 @Component({
@@ -31,13 +31,17 @@ export default class RankedCollector extends BasicCollector {
 
   getRankedContext() {
     axios
-      .get(process.env.VUE_APP_API_URL + "/rank", {
+      .get(process.env.VUE_APP_API_URL + "/rankfact", {
         params: { idx: this.datum.idx, chosenFacts: this.selectedFacts },
       })
       .then(
         function (this: BasicCollector, response: AxiosResponse) {
-          const rankResponse = response.data as RankFactsResponse;
-          this.$store.commit("updateRankedFacts", rankResponse.ranked_facts);
+          const rankResponse = response.data as RankFactResponse;
+          console.log(rankResponse);
+          this.$store.commit(
+            "updateRankedFactNumbers",
+            rankResponse.ranked_fact_numbers
+          );
         }.bind(this)
       );
   }
