@@ -14,6 +14,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
 import { FlattenedNumberedSentence, NumberedSentence } from "../Datum";
+import CollectorModel from "@/CollectorModel";
 
 @Component({
   components: {
@@ -21,16 +22,15 @@ import { FlattenedNumberedSentence, NumberedSentence } from "../Datum";
   },
 })
 export default class SelecteFactHint extends Vue {
-  name = "SelecteFactHint";
-
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
   get contextFlattened() {
-    return this.$store.state.datum[
-      "flattened_context"
-    ] as FlattenedNumberedSentence[];
+    return this.state.datum["flattened_context"] as FlattenedNumberedSentence[];
   }
 
   get selectedFacts() {
-    return this.$store.state.selectedFacts as number[];
+    return this.state.selectedFactsArray;
   }
 
   get selectedSentences() {

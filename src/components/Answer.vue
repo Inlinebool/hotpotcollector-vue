@@ -3,10 +3,17 @@
     <v-card-text>
       <v-container>
         <v-row>
-          <v-text-field label="Answer" v-model="answer" outlined clearable></v-text-field>
+          <v-text-field label="Answer" v-model="answer" @input="onAnswerInput" outlined clearable></v-text-field>
         </v-row>
         <v-row>
-          <v-textarea name="Note" label="Note" v-model="note" outlined clearable></v-textarea>
+          <v-textarea
+            name="Note"
+            label="Note"
+            v-model="note"
+            @input="onNoteInput"
+            outlined
+            clearable
+          ></v-textarea>
         </v-row>
         <v-row>
           <v-col>
@@ -24,13 +31,16 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import CollectorModel from "@/CollectorModel";
 
 @Component
 export default class Answer extends Vue {
-  name = "Answer";
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
 
   get answer() {
-    return this.$store.state.answer as string;
+    return this.state.answer as string;
   }
 
   set answer(value) {
@@ -38,7 +48,7 @@ export default class Answer extends Vue {
   }
 
   get note() {
-    return this.$store.state.note as string;
+    return this.state.note as string;
   }
 
   set note(value) {
@@ -58,6 +68,16 @@ export default class Answer extends Vue {
   clear() {
     this.answer = "";
     this.note = "";
+  }
+
+  onAnswerInput(value: string) {
+    const time = Date.now() - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addAnswerTypeRecord", { value, time });
+  }
+
+  onNoteInput(value: string) {
+    const time = Date.now() - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addNoteTypeRecord", { value, time });
   }
 }
 </script>

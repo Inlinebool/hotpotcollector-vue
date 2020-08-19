@@ -66,35 +66,35 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import { Paragraph, FlattenedNumberedSentence, HitStatus } from "../Datum";
 import sw from "stopword";
-import { NameReference } from "@/CollectorModel";
-import ParagraphCard from "@/components/ParagraphCard.vue";
+import CollectorModel, { NameReference } from "@/CollectorModel";
 
 @Component({
   name: "Sentence",
 })
 export default class Sentence extends Vue {
   @Prop(Number) readonly sentenceNumber!: number;
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
 
   get sentence() {
     return this.contextFlattened[this.sentenceNumber - 1];
   }
 
   get context() {
-    return this.$store.state.datum.context as Paragraph[];
+    return this.state.datum.context as Paragraph[];
   }
 
   get contextFlattened() {
-    return this.$store.state.datum[
-      "flattened_context"
-    ] as FlattenedNumberedSentence[];
+    return this.state.datum["flattened_context"] as FlattenedNumberedSentence[];
   }
 
   get selectedFacts() {
-    return this.$store.state.selectedFacts as number[];
+    return this.state.selectedFactsArray;
   }
 
   get searchQuery() {
-    return this.$store.state.searchQuery as string;
+    return this.state.searchQuery as string;
   }
 
   get hitStatus() {
@@ -102,7 +102,7 @@ export default class Sentence extends Vue {
   }
 
   get sentenceReference() {
-    return this.$store.state.sentenceReference as NameReference;
+    return this.state.sentenceReference as NameReference;
   }
 
   @Prop(Boolean) readonly enabled!: boolean;
@@ -110,7 +110,7 @@ export default class Sentence extends Vue {
   @Prop(Boolean) readonly showTitle!: boolean;
 
   get question() {
-    return this.$store.state.datum.question;
+    return this.state.datum.question;
   }
 
   get sentenceNumberText() {
@@ -190,7 +190,7 @@ export default class Sentence extends Vue {
   }
 
   get paragraphReference() {
-    return this.$store.state.paragraphReference as NameReference;
+    return this.state.paragraphReference as NameReference;
   }
 
   get paragraphHeader() {
@@ -212,7 +212,11 @@ export default class Sentence extends Vue {
   }
 
   onClickFact() {
-    this.$store.commit("toggleFactSelection", this.sentence[0]);
+    const options = {
+      factNumber: this.sentence[0],
+      time: Date.now() - this.state.startTime - this.state.pausedTime,
+    };
+    this.$store.dispatch("onFactClicked", options);
   }
 
   expand = false;

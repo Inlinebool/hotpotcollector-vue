@@ -10,7 +10,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn :to="selectedInterfaceRoute">Start</v-btn>
+      <v-btn to="/collector">Start</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -19,6 +19,7 @@
 import Vue from "vue";
 import { Levels } from "@/Datum";
 import Component from "vue-class-component";
+import CollectorModel from "@/CollectorModel";
 
 interface InterfaceRoutes {
   [interfaceName: string]: string;
@@ -26,23 +27,18 @@ interface InterfaceRoutes {
 
 @Component
 export default class UserSelect extends Vue {
-  name = "UserSelect";
-
   usernames = ["anon", "kairong", "josh", "mihai", "fan", "matt"];
 
   levelList = ["easy", "medium", "hard"];
 
   interfaces = ["Basic", "Ranked"];
 
-  selectedInterface = "Basic";
-
-  interfaceRoutes = {
-    Basic: "/basic",
-    Ranked: "/ranked",
-  } as InterfaceRoutes;
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
 
   get user() {
-    return this.$store.state.user;
+    return this.state.user;
   }
 
   set user(value: string) {
@@ -51,7 +47,7 @@ export default class UserSelect extends Vue {
 
   get selectedLevels() {
     const selectedLevels = [];
-    const levels = this.$store.state.levels;
+    const levels = this.state.levels;
     for (const level of this.levelList) {
       if (levels[level]) {
         selectedLevels.push(level);
@@ -68,8 +64,12 @@ export default class UserSelect extends Vue {
     this.$store.commit("setLevels", levels);
   }
 
-  get selectedInterfaceRoute() {
-    return this.interfaceRoutes[this.selectedInterface];
+  get selectedInterface() {
+    return this.state.interfaceName;
+  }
+
+  set selectedInterface(value: string) {
+    this.$store.commit("setInterface", value);
   }
 }
 </script>

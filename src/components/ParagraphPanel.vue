@@ -15,7 +15,7 @@ import Component from "vue-class-component";
 import Sentence from "./Sentence.vue";
 import { Prop } from "vue-property-decorator";
 import { Paragraph } from "../Datum";
-import { NameReference } from "@/CollectorModel";
+import CollectorModel, { NameReference } from "@/CollectorModel";
 
 @Component({
   components: {
@@ -23,16 +23,18 @@ import { NameReference } from "@/CollectorModel";
   },
 })
 export default class ParagraphPanel extends Vue {
-  name = "ParagraphPanel";
-
   @Prop(Number) readonly paragraphNumber!: number;
 
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
+
   get paragraph() {
-    return this.$store.state.datum.context[this.paragraphNumber] as Paragraph;
+    return this.state.datum.context[this.paragraphNumber] as Paragraph;
   }
 
   get paragraphReference() {
-    return this.$store.state.paragraphReference as NameReference;
+    return this.state.paragraphReference as NameReference;
   }
 
   get paragraphHeader() {

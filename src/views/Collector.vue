@@ -28,7 +28,7 @@
         </v-row>
         <v-row>
           <v-col cols="8">
-            <component v-bind:is="contextComponent" />
+            <Context :ready="ready"></Context>
           </v-col>
           <v-col cols="4">
             <v-row>
@@ -50,35 +50,31 @@ import Question from "../components/Question.vue";
 import Context from "../components/Context.vue";
 import Answer from "../components/Answer.vue";
 import SelectedFactHint from "../components/SelectedFactHint.vue";
-import QuestionSelect from "../components/QuestionSelect.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum, {
-  FlattenedNumberedSentence,
-  RankParagraphResponse,
-} from "../Datum";
-import Axios from "axios";
+import Datum, { RankParagraphResponse, RankFactResponse } from "../Datum";
+import CollectorModel from "@/CollectorModel";
+import { Watch } from "vue-property-decorator";
 
 @Component({
   components: {
     Question,
     Context,
     Answer,
-    QuestionSelect,
     SelectedFactHint,
   },
 })
-export default class BasicCollector extends Vue {
-  name = "BasicCollector";
+export default class Collector extends Vue {
   gotoIdx = -1;
   previousIndices = [] as number[];
-  searchString = "" as string;
-  contextComponent = "Context";
   created() {
     this.randomQuestion(true);
   }
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
   get datum() {
-    return this.$store.state.datum as Datum;
+    return this.state.datum as Datum;
   }
   get question() {
     return this.datum["question"];
@@ -90,14 +86,19 @@ export default class BasicCollector extends Vue {
     return this.datum["flattened_context"];
   }
   get selectedFacts() {
-    return this.$store.state.selectedFacts as number[];
+    return this.state.selectedFactsArray;
   }
   get user() {
-    return this.$store.state.user;
+    return this.state.user;
   }
   get levels() {
-    return this.$store.state.levels;
+    return this.state.levels;
   }
+  get ranked(): boolean {
+    return this.state.interfaceName != "Basic";
+  }
+
+  ready = false;
 
   onSubmit() {
     axios
@@ -106,7 +107,7 @@ export default class BasicCollector extends Vue {
         this.$store.getters.answerSubmitData
       )
       .then(
-        function (this: BasicCollector, response: AxiosResponse) {
+        function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
             this.randomQuestion(true);
           } else {
@@ -116,7 +117,7 @@ export default class BasicCollector extends Vue {
       );
   }
 
-  onSkip(note: string) {
+  onSkip() {
     this.$store.commit("setAnswer", "");
     axios
       .post(
@@ -124,7 +125,7 @@ export default class BasicCollector extends Vue {
         this.$store.getters.answerSubmitData
       )
       .then(
-        function (this: BasicCollector, response: AxiosResponse) {
+        function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
             this.randomQuestion(true);
           } else {
@@ -145,18 +146,20 @@ export default class BasicCollector extends Vue {
   }
 
   indexedQuestion(idx: number, save: boolean) {
+    this.ready = false;
     axios
       .get(process.env.VUE_APP_API_URL + "/question", {
         params: { idx: idx },
       })
       .then(
-        function (this: BasicCollector, response: AxiosResponse) {
+        function (this: Collector, response: AxiosResponse) {
           this.newQuestion(response.data, save);
         }.bind(this)
       );
   }
 
   randomQuestion(save: boolean) {
+    this.ready = false;
     axios
       .get(process.env.VUE_APP_API_URL + "/question", {
         params: {
@@ -167,7 +170,7 @@ export default class BasicCollector extends Vue {
         },
       })
       .then(
-        function (this: BasicCollector, response: AxiosResponse) {
+        function (this: Collector, response: AxiosResponse) {
           this.newQuestion(response.data, save);
         }.bind(this)
       );
@@ -177,19 +180,53 @@ export default class BasicCollector extends Vue {
     if (this.datum.idx && this.datum.idx != -1 && save) {
       this.previousIndices.push(this.datum.idx);
     }
-    this.$store.commit("setDatum", datum);
-    this.gotoIdx = datum.idx;
+    this.$store.dispatch("newDatum", datum).then(() => {
+      this.gotoIdx = datum.idx;
+      if (this.ranked) {
+        this.getRankedContext();
+      } else {
+        this.getRankedParagraph();
+      }
+    });
+  }
+
+  @Watch("selectedFacts")
+  updateRankedContext() {
+    if (this.ranked) {
+      this.getRankedContext();
+    }
+  }
+
+  getRankedContext() {
     axios
-      .get(process.env.VUE_APP_API_URL + "/rankparagraph", {
-        params: { idx: datum.idx },
+      .get(process.env.VUE_APP_API_URL + "/rankfact", {
+        params: { idx: this.datum.idx, chosenFacts: this.selectedFacts },
       })
       .then(
-        function (this: BasicCollector, response: AxiosResponse) {
+        function (this: Collector, response: AxiosResponse) {
+          const rankResponse = response.data as RankFactResponse;
+          this.$store.commit(
+            "updateRankedFactNumbers",
+            rankResponse.ranked_fact_numbers
+          );
+          this.ready = true;
+        }.bind(this)
+      );
+  }
+
+  getRankedParagraph() {
+    axios
+      .get(process.env.VUE_APP_API_URL + "/rankparagraph", {
+        params: { idx: this.datum.idx },
+      })
+      .then(
+        function (this: Collector, response: AxiosResponse) {
           const rankedParagraphs = response.data as RankParagraphResponse;
           this.$store.commit(
             "updateRankedParagraphs",
             rankedParagraphs.ranked_paragraphs
           );
+          this.ready = true;
         }.bind(this)
       );
   }

@@ -23,11 +23,7 @@ export interface Paragraph {
 
 export interface HitStatus {
   hitParagraphs: string[];
-  highlightedSentences: HighlightedSentences;
-}
-
-export interface HighlightedSentences {
-  [sentenceNumber: number]: string;
+  highlightedSentences: string[];
 }
 
 export interface RankFactResponse {
@@ -85,7 +81,7 @@ export function searchContext(context: Paragraph[], searchQuery: string) {
   context.forEach(paragraph => {
     let hit = false;
     const queryReg = new RegExp(query, 'gi');
-    if (paragraph[0].search(query) != -1) {
+    if (paragraph[0].search(queryReg) != -1) {
       hit = true;
     }
     paragraph[1].forEach(numberedSentence => {

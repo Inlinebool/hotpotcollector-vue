@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-3">
+  <v-card class="ma-3" max-height>
     <v-toolbar dense elevation="1">
       <v-text-field
         class="mr-2"
@@ -14,18 +14,19 @@
         @input="searchQueryChanged"
       ></v-text-field>
       <v-spacer />
-      <v-btn class="mr-2" small @click="expandHit">Expand Hit</v-btn>
-      <v-btn class="mr-2" small @click="expandAll">Expand All</v-btn>
-      <v-btn class="mr-2" small @click="collapseAll">Collapse All</v-btn>
+      <v-btn class="mr-2" small @click="expandHit" v-if="!ranked">Expand Hit</v-btn>
+      <v-btn class="mr-2" small @click="expandAll" v-if="!ranked">Expand All</v-btn>
+      <v-btn class="mr-2" small @click="collapseAll" v-if="!ranked">Collapse All</v-btn>
     </v-toolbar>
     <v-card-text>
-      <v-expansion-panels multiple v-model="openedParagraphs">
+      <v-expansion-panels multiple v-model="openedParagraphs" v-if="!ranked && ready">
         <ParagraphPanel
-          v-for="(index) in rankedParagraphIndices"
+          v-for="(index) in range(context.length)"
           :key="index"
-          :paragraphNumber="index"
+          :paragraphNumber="rankedParagraphIndices[index]"
         ></ParagraphPanel>
       </v-expansion-panels>
+      <RankedContextContent v-if="ranked && ready"></RankedContextContent>
     </v-card-text>
   </v-card>
 </template>
@@ -34,23 +35,32 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import ParagraphPanel from "./ParagraphPanel.vue";
-import { Prop, Watch } from "vue-property-decorator";
+import { Watch, Prop } from "vue-property-decorator";
 import {
   Paragraph,
   FlattenedNumberedSentence,
   HitStatus,
   ParagraphSimilarity,
 } from "../Datum";
-import { NameReference } from "@/CollectorModel";
+import CollectorModel, { NameReference } from "@/CollectorModel";
+import RankedContextContent from "@/components/RankedContextContent.vue";
+import _ from "lodash";
 
 @Component({
-  components: { ParagraphPanel },
+  components: {
+    ParagraphPanel,
+    RankedContextContent,
+  },
 })
 export default class Context extends Vue {
-  name = "Context";
+  @Prop(Boolean) readonly ready!: boolean;
+
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
 
   get searchQuery() {
-    return this.$store.state.searchQuery as string;
+    return this.state.searchQuery as string;
   }
 
   set searchQuery(value) {
@@ -58,14 +68,13 @@ export default class Context extends Vue {
   }
 
   get context() {
-    return this.$store.state.datum.context as Paragraph[];
+    return this.state.datum.context as Paragraph[];
   }
 
   get rankedParagraphIndices() {
-    const rankedParagraphs = this.$store.state
+    const rankedParagraphs = this.state
       .rankedParagraphs as ParagraphSimilarity[];
-    const paragraphReference = this.$store.state
-      .paragraphReference as NameReference;
+    const paragraphReference = this.state.paragraphReference as NameReference;
     const rankedIndices = [] as number[];
     for (const paragraph of rankedParagraphs) {
       rankedIndices.push(
@@ -76,7 +85,7 @@ export default class Context extends Vue {
   }
 
   get reverseRankedParagraphIndices() {
-    const rankedParagraphs = this.$store.state.rankedParagraphs as string[];
+    const rankedParagraphs = this.state.rankedParagraphs;
     const reverseIndices = {} as NameReference;
     for (const paragraph of this.context) {
       for (let i = 0; i < rankedParagraphs.length; i++) {
@@ -89,13 +98,19 @@ export default class Context extends Vue {
   }
 
   get contextFlattened() {
-    return this.$store.state.datum[
-      "flattened_context"
-    ] as FlattenedNumberedSentence[];
+    return this.state.datum["flattened_context"] as FlattenedNumberedSentence[];
   }
 
   get hitStatus() {
     return this.$store.getters.hitStatus as HitStatus;
+  }
+
+  get ranked(): boolean {
+    return this.state.interfaceName != "Basic";
+  }
+
+  get contexted(): boolean {
+    return this.state.interfaceName == "Ranked without Context";
   }
 
   openedParagraphs = [] as number[];
@@ -103,6 +118,10 @@ export default class Context extends Vue {
   @Watch("context")
   onContextChanged() {
     setTimeout(this.expandAll, 200);
+  }
+
+  range(size: number) {
+    return _.range(size);
   }
 
   expandAll() {
@@ -129,6 +148,10 @@ export default class Context extends Vue {
 
   searchQueryChanged() {
     this.expandHit();
+    if (this.state.startTime != -1) {
+      const time = Date.now() - this.state.startTime - this.state.pausedTime;
+      this.$store.dispatch("addSearchRecord", time);
+    }
   }
 }
 </script>

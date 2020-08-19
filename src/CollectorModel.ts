@@ -1,8 +1,8 @@
-import Datum, { OperationRecord, Paragraph, ParagraphSimilarity } from "./Datum";
+import Datum, { OperationRecord, ParagraphSimilarity, Levels } from "./Datum";
 
 export default interface CollectorModel {
   user: string;
-  levels: { easy: boolean, medium: boolean, hard: boolean; };
+  levels: Levels;
   datum: Datum;
   rankedParagraphs: ParagraphSimilarity[];
   rankedSentences: number[];
@@ -10,7 +10,8 @@ export default interface CollectorModel {
   sentenceReference: NameReference;
   answer: string;
   note: string;
-  selectedFacts: number[];
+  selectedFacts: Set<number>;
+  selectedFactsArray: number[];
   searchQuery: string;
   startTime: number;
   pausedTime: number;
@@ -18,6 +19,7 @@ export default interface CollectorModel {
   pauseEndTime: number;
   isPaused: boolean;
   operationRecords: OperationRecord[];
+  interfaceName: string;
 }
 
 export interface NameReference {

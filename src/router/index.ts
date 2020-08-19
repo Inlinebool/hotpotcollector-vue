@@ -1,21 +1,15 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import BasicCollector from '../views/BasicCollector.vue';
-import RankedCollector from '../views/RankedCollector.vue';
+import Collector from '@/views/Collector.vue';
 import UserSelect from '../views/UserSelect.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/basic',
-    name: 'BasicCollector',
-    component: BasicCollector
-  },
-  {
-    path: '/ranked',
-    name: 'RankedCollector',
-    component: RankedCollector
+    path: '/collector',
+    name: 'Collector',
+    component: Collector
   },
   {
     path: '/',
@@ -33,7 +27,7 @@ const routes: Array<RouteConfig> = [
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 });

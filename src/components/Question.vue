@@ -16,17 +16,19 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import CollectorModel from '@/CollectorModel';
 
 @Component
 export default class Question extends Vue {
-  name = "Question";
-
   tooltip =
     "For the following question, type in the correct answer based on the given paragraphs and click on the sentence that support your answer.";
 
+  get state() {
+    return this.$store.state as CollectorModel;
+  }
+
   get question() {
-    return this.$store.state.datum.question as string;
+    return this.state.datum.question as string;
   }
 }
 </script>
