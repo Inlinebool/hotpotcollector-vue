@@ -70,9 +70,6 @@ import { NameReference } from "@/CollectorModel";
 import ParagraphCard from "@/components/ParagraphCard.vue";
 
 @Component({
-  // components: {
-  //   ParagraphCard,
-  // },
   name: "Sentence",
 })
 export default class Sentence extends Vue {
