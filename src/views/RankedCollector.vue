@@ -37,7 +37,6 @@ export default class RankedCollector extends BasicCollector {
       .then(
         function (this: BasicCollector, response: AxiosResponse) {
           const rankResponse = response.data as RankFactResponse;
-          console.log(rankResponse);
           this.$store.commit(
             "updateRankedFactNumbers",
             rankResponse.ranked_fact_numbers

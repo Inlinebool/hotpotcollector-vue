@@ -45,7 +45,7 @@
           >({{ paragraphHeader }})</v-btn>
         </v-row>
         <v-row>
-          <v-expand-transition v-if="showTitle">
+          <v-expand-transition>
             <v-card v-show="expand" width="70%" class="mx-10">
               <v-card-text>
                 <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
@@ -67,11 +67,15 @@ import { Prop } from "vue-property-decorator";
 import { Paragraph, FlattenedNumberedSentence, HitStatus } from "../Datum";
 import sw from "stopword";
 import { NameReference } from "@/CollectorModel";
+import ParagraphCard from "@/components/ParagraphCard.vue";
 
-@Component
+@Component({
+  // components: {
+  //   ParagraphCard,
+  // },
+  name: "Sentence",
+})
 export default class Sentence extends Vue {
-  name = "Sentence";
-
   @Prop(Number) readonly sentenceNumber!: number;
 
   get sentence() {
@@ -111,8 +115,6 @@ export default class Sentence extends Vue {
   get question() {
     return this.$store.state.datum.question;
   }
-
-  expand = false;
 
   get sentenceNumberText() {
     return "[" + this.sentenceReference[this.sentence[0]] + "]";
@@ -180,6 +182,16 @@ export default class Sentence extends Vue {
     return undefined;
   }
 
+  get paragraphNumber() {
+    if (this.context && this.sentence[2])
+      for (let i = 0; i < this.context.length; i++) {
+        if (this.context[i][0] == this.sentence[2]) {
+          return i;
+        }
+      }
+    return undefined;
+  }
+
   get paragraphReference() {
     return this.$store.state.paragraphReference as NameReference;
   }
@@ -205,6 +217,8 @@ export default class Sentence extends Vue {
   onClickFact() {
     this.$store.commit("toggleFactSelection", this.sentence[0]);
   }
+
+  expand = false;
 
   onClickTitle() {
     this.expand = !this.expand;
