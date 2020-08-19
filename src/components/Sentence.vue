@@ -42,7 +42,7 @@
             @click="onClickTitle"
             text
             small
-          >({{ sentence[2] }})</v-btn>
+          >({{ paragraphHeader }})</v-btn>
         </v-row>
         <v-row>
           <v-expand-transition v-if="showTitle">
@@ -75,12 +75,7 @@ export default class Sentence extends Vue {
   @Prop(Number) readonly sentenceNumber!: number;
 
   get sentence() {
-    for (let i = 0; i < this.contextFlattened.length; i++) {
-      if (this.sentenceNumber == this.contextFlattened[i][0]) {
-        return this.contextFlattened[i];
-      }
-    }
-    return this.contextFlattened[0];
+    return this.contextFlattened[this.sentenceNumber - 1];
   }
 
   get context() {
@@ -183,6 +178,20 @@ export default class Sentence extends Vue {
         }
       }
     return undefined;
+  }
+
+  get paragraphReference() {
+    return this.$store.state.paragraphReference as NameReference;
+  }
+
+  get paragraphHeader() {
+    if (this.paragraph) {
+      return (
+        this.paragraphReference[this.paragraph[0]] + ": " + this.paragraph[0]
+      );
+    } else {
+      return undefined;
+    }
   }
 
   get selected() {

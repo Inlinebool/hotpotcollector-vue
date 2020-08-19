@@ -61,6 +61,7 @@ export default new Vuex.Store({
       state.operationRecords = [];
       let letterCode = "A".charCodeAt(0);
       for (const paragraph of state.datum.context) {
+
         state.paragraphReference[paragraph[0]] = String.fromCharCode(letterCode);
         for (let i = 0; i < paragraph[1].length; i++) {
           state.sentenceReference[String(paragraph[1][i][0])] = String.fromCharCode(letterCode) + '-' + String(i + 1);
