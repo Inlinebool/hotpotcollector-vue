@@ -146,8 +146,10 @@ export default class Collector extends Vue {
     }
     const time = this.time();
     this.$store.dispatch("addSessionTime", { time });
+    const submitData = this.createSubmitData();
+    console.log(submitData);
     axios
-      .post(process.env.VUE_APP_API_URL + "/answer", this.createSubmitData())
+      .post(process.env.VUE_APP_API_URL + "/answer", submitData)
       .then(
         function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
@@ -162,8 +164,10 @@ export default class Collector extends Vue {
   onSkip() {
     const time = this.time();
     this.$store.dispatch("addSessionTime", { time });
+    const submitData = this.createSubmitData();
+    console.log(submitData);
     axios
-      .post(process.env.VUE_APP_API_URL + "/answer", this.createSubmitData())
+      .post(process.env.VUE_APP_API_URL + "/answer", submitData)
       .then(
         function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
