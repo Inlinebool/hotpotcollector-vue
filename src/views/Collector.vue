@@ -180,7 +180,7 @@ export default class Collector extends Vue {
     if (this.datum.idx && this.datum.idx != -1 && save) {
       this.previousIndices.push(this.datum.idx);
     }
-    this.$store.dispatch("newDatum", datum).then(() => {
+    this.$store.dispatch("newDatum", { datum }).then(() => {
       this.gotoIdx = datum.idx;
       if (this.ranked) {
         this.getRankedContext();

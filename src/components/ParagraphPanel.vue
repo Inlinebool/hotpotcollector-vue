@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel @change="onParagraphToggled">
     <v-expansion-panel-header>{{ paragraphHeader }}</v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row v-for="sentence in paragraph[1]" :key="sentence[0]" class="my-2">
@@ -41,6 +41,10 @@ export default class ParagraphPanel extends Vue {
     return (
       this.paragraphReference[this.paragraph[0]] + ": " + this.paragraph[0]
     );
+  }
+
+  onParagraphToggled() {
+    this.$emit("toggled");
   }
 }
 </script>

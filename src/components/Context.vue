@@ -14,9 +14,9 @@
         @input="searchQueryChanged"
       ></v-text-field>
       <v-spacer />
-      <v-btn class="mr-2" small @click="expandHit" v-if="!ranked">Expand Hit</v-btn>
-      <v-btn class="mr-2" small @click="expandAll" v-if="!ranked">Expand All</v-btn>
-      <v-btn class="mr-2" small @click="collapseAll" v-if="!ranked">Collapse All</v-btn>
+      <v-btn class="mr-2" small @click="expandHit(true)" v-if="!ranked">Expand Hit</v-btn>
+      <v-btn class="mr-2" small @click="expandAll(true)" v-if="!ranked">Expand All</v-btn>
+      <v-btn class="mr-2" small @click="collapseAll(true)" v-if="!ranked">Collapse All</v-btn>
     </v-toolbar>
     <v-card-text>
       <v-expansion-panels multiple v-model="openedParagraphs" v-if="!ranked && ready">
@@ -24,6 +24,7 @@
           v-for="(index) in range(context.length)"
           :key="index"
           :paragraphNumber="rankedParagraphIndices[index]"
+          @toggled="onParagraphToggled"
         ></ParagraphPanel>
       </v-expansion-panels>
       <RankedContextContent v-if="ranked && ready"></RankedContextContent>
@@ -113,29 +114,65 @@ export default class Context extends Vue {
     return this.state.interfaceName == "Ranked without Context";
   }
 
+  get openedParagraphTitles() {
+    const titles = [] as string[];
+    if (this.ready) {
+      for (const index of this.openedParagraphs) {
+        titles.push(this.context[this.rankedParagraphIndices[index]][0]);
+      }
+    }
+    return titles;
+  }
+
+  time() {
+    if (this.state.startTime != -1) {
+      return Date.now() - this.state.startTime - this.state.pausedTime;
+    } else {
+      return -1;
+    }
+  }
+
   openedParagraphs = [] as number[];
+
+  onParagraphToggled() {
+    const time = this.time();
+    const titles = this.openedParagraphTitles;
+    this.$store.dispatch("addToggleParagraphRecord", { titles, time });
+  }
 
   @Watch("context")
   onContextChanged() {
-    setTimeout(this.expandAll, 200);
+    setTimeout(this.expandAll, 200, false);
   }
 
   range(size: number) {
     return _.range(size);
   }
 
-  expandAll() {
+  expandAll(record: boolean) {
     this.openedParagraphs = [];
     for (let i = 0; i < this.context.length; i++) {
       this.openedParagraphs.push(i);
     }
+    if (record) {
+      const time = this.time();
+      if (time != -1) {
+        this.$store.dispatch("addExpandAllRecord", { time });
+      }
+    }
   }
 
-  collapseAll() {
+  collapseAll(record: boolean) {
     this.openedParagraphs = [];
+    if (record) {
+      const time = this.time();
+      if (time != -1) {
+        this.$store.dispatch("addCollapseAllRecord", { time });
+      }
+    }
   }
 
-  expandHit() {
+  expandHit(record: boolean) {
     this.openedParagraphs = [];
     this.context.forEach((paragraph) => {
       if (this.hitStatus.hitParagraphs.includes(paragraph[0])) {
@@ -144,13 +181,19 @@ export default class Context extends Vue {
         );
       }
     });
+    if (record) {
+      const time = this.time();
+      if (time != -1) {
+        this.$store.dispatch("addExpandHitRecord", { time });
+      }
+    }
   }
 
   searchQueryChanged() {
-    this.expandHit();
-    if (this.state.startTime != -1) {
-      const time = Date.now() - this.state.startTime - this.state.pausedTime;
-      this.$store.dispatch("addSearchRecord", time);
+    this.expandHit(false);
+    const time = this.time();
+    if (time != -1) {
+      this.$store.dispatch("addSearchRecord", { time });
     }
   }
 }

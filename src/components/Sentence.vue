@@ -73,6 +73,9 @@ import CollectorModel, { NameReference } from "@/CollectorModel";
 })
 export default class Sentence extends Vue {
   @Prop(Number) readonly sentenceNumber!: number;
+  @Prop(Boolean) readonly enabled!: boolean;
+  @Prop(Boolean) readonly showTitle!: boolean;
+
   get state() {
     return this.$store.state as CollectorModel;
   }
@@ -104,10 +107,6 @@ export default class Sentence extends Vue {
   get sentenceReference() {
     return this.state.sentenceReference as NameReference;
   }
-
-  @Prop(Boolean) readonly enabled!: boolean;
-
-  @Prop(Boolean) readonly showTitle!: boolean;
 
   get question() {
     return this.state.datum.question;
@@ -219,10 +218,21 @@ export default class Sentence extends Vue {
     this.$store.dispatch("onFactClicked", options);
   }
 
+  time() {
+    if (this.state.startTime != -1) {
+      return Date.now() - this.state.startTime - this.state.pausedTime;
+    } else {
+      return -1;
+    }
+  }
+
   expand = false;
 
   onClickTitle() {
     this.expand = !this.expand;
+    const factNumber = this.sentence[0];
+    const time = this.time();
+    this.$store.dispatch("addToggleContextRecord", { factNumber, time });
   }
 }
 </script>

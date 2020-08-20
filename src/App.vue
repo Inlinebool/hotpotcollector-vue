@@ -42,19 +42,35 @@ export default Vue.extend({
 
   store,
 
+  computed: {
+    state: () => {
+      return store.state as CollectorModel;
+    },
+  },
+
   methods: {
+    time() {
+      if (this.state.startTime != -1) {
+        return Date.now() - this.state.startTime - this.state.pausedTime;
+      } else {
+        return -1;
+      }
+    },
     onScroll(e: { target: { scrollTop: any } }) {
       if (typeof window === "undefined") return;
       const top = window.pageYOffset || e.target.scrollTop || 0;
       this.fab = top > 20;
-      const state = this.$store.state as CollectorModel;
-      if (state.startTime != -1) {
-        const time = Date.now() - state.startTime - state.pausedTime;
+      const time = this.time();
+      if (time != -1) {
         this.recordScroll(top, time, this.$store);
       }
     },
     toTop() {
       this.$vuetify.goTo(0);
+      const time = this.time();
+      if (time != -1) {
+        this.$store.dispatch("addBackToTopRecord", { time });
+      }
     },
     recordScroll: _.throttle((top: number, time: number, store: any) => {
       store.commit("appendOperationRecord", {

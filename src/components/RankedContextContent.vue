@@ -9,9 +9,9 @@
               <v-switch
                 no-gutters
                 label="Select All"
-                v-model="selectAll"
+                v-model="enableAll"
                 dense
-                @change="toggleSelectAll"
+                @change="toggleEnableAll"
               ></v-switch>
             </v-row>
             <v-divider />
@@ -22,6 +22,7 @@
                   v-model="enabledParagraphs"
                   :value="paragraph[0]"
                   dense
+                  @change="enableToggled"
                 ></v-checkbox>
               </v-col>
             </v-row>
@@ -77,9 +78,17 @@ export default class RankedContextContent extends Vue {
     return this.paragraphReference[title] + ": " + title;
   }
 
+  time() {
+    if (this.state.startTime != -1) {
+      return Date.now() - this.state.startTime - this.state.pausedTime;
+    } else {
+      return -1;
+    }
+  }
+
   enabledParagraphs = [] as string[];
 
-  selectAll = true;
+  enableAll = true;
 
   created() {
     this.onContextChanged();
@@ -94,11 +103,11 @@ export default class RankedContextContent extends Vue {
       });
     }
 
-    this.selectAll = true;
+    this.enableAll = true;
   }
 
-  toggleSelectAll() {
-    if (this.selectAll) {
+  toggleEnableAll() {
+    if (this.enableAll) {
       this.enabledParagraphs = [] as string[];
       this.context.forEach((paragraph) => {
         this.enabledParagraphs.push(paragraph[0]);
@@ -106,6 +115,8 @@ export default class RankedContextContent extends Vue {
     } else {
       this.enabledParagraphs = [];
     }
+    const time = this.time();
+    this.$store.dispatch("addToggleEnableAllRecord", { time });
   }
 
   get enabledFacts() {
@@ -123,6 +134,14 @@ export default class RankedContextContent extends Vue {
     }
 
     return enabledFacts;
+  }
+
+  enableToggled(enabledParagraphs: string[]) {
+    const time = this.time();
+    this.$store.dispatch("addToggleEnableRecord", {
+      enabledParagraphs,
+      time,
+    });
   }
 }
 </script>

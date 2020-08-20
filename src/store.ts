@@ -119,7 +119,7 @@ export default new Vuex.Store({
   },
 
   actions: {
-    addSearchRecord(context, time: number) {
+    addSearchRecord(context, { time }) {
       const searchQuery = context.state.searchQuery;
       const hitStatus = context.getters.hitStatus as HitStatus;
       const originalSentences = context.state.datum.flattened_context;
@@ -134,7 +134,7 @@ export default new Vuex.Store({
       context.commit("appendOperationRecord", {
         name: "search",
         data: {
-          query: searchQuery,
+          query: searchQuery ? searchQuery : "",
           hitParagraphs: hitStatus.hitParagraphs,
           hitSentences: hitSentences
         },
@@ -151,9 +151,9 @@ export default new Vuex.Store({
         name: "select",
         data: Array.from(context.state.selectedFacts),
         time: time
-      });
+      } as OperationRecord);
     },
-    newDatum(context, datum: Datum) {
+    newDatum(context, { datum }) {
       context.commit("setDatum", datum);
       context.commit("clearSelectedFacts");
       context.commit("setSearchQuery", "");
@@ -188,5 +188,61 @@ export default new Vuex.Store({
         time: time
       } as OperationRecord);
     },
+    addToggleParagraphRecord(context, { openedParagraphs, time }) {
+      context.commit("appendOperationRecord", {
+        name: "toggle_paragraph",
+        data: openedParagraphs,
+        time: time
+      } as OperationRecord);
+    },
+    addExpandAllRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "expand_all",
+        data: "",
+        time: time
+      } as OperationRecord);
+    },
+    addCollapseAllRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "collapse_all",
+        data: "",
+        time: time
+      } as OperationRecord);
+    },
+    addExpandHitRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "expand_hit",
+        data: "",
+        time: time
+      } as OperationRecord);
+    },
+    addToggleContextRecord(context, { factNumber, time }) {
+      context.commit("appendOperationRecord", {
+        name: "toggle_context",
+        data: factNumber,
+        time: time
+      } as OperationRecord);
+    },
+    addToggleEnableAllRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "toggle_enable_all",
+        data: "",
+        time: time
+      } as OperationRecord);
+    },
+    addToggleEnableRecord(context, { enabledParagraphs, time }) {
+      context.commit("appendOperationRecord", {
+        name: "toggle_enable",
+        data: enabledParagraphs,
+        time: time
+      } as OperationRecord);
+    },
+    addBackToTopRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "back_top",
+        data: "",
+        time: time
+      } as OperationRecord);
+    }
   },
 });
