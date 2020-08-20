@@ -1,5 +1,10 @@
 <template>
   <v-card class="ma-3">
+    <v-overlay :value="paused" opacity="1">
+      <v-btn icon @click="togglePause">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-overlay>
     <v-toolbar dense elevation="1" floating>
       <v-text-field
         class="mr-2 shrink"
@@ -18,6 +23,7 @@
       <v-btn class="mr-2" small @click="backup">
         <v-icon>mdi-backup-restore</v-icon>
       </v-btn>
+      <v-btn class="mr-2" small @click="togglePause">Pause</v-btn>
     </v-toolbar>
     <v-card-text>
       <v-container>
@@ -52,7 +58,12 @@ import Answer from "../components/Answer.vue";
 import SelectedFactHint from "../components/SelectedFactHint.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
-import Datum, { RankParagraphResponse, RankFactResponse } from "../Datum";
+import Datum, {
+  RankParagraphResponse,
+  RankFactResponse,
+  AnswerData,
+  AnswerSubmit,
+} from "../Datum";
 import CollectorModel from "@/CollectorModel";
 import { Watch } from "vue-property-decorator";
 
@@ -97,15 +108,46 @@ export default class Collector extends Vue {
   get ranked(): boolean {
     return this.state.interfaceName != "Basic";
   }
+  get paused() {
+    return this.state.isPaused;
+  }
 
   ready = false;
 
+  time() {
+    if (this.state.startTime != -1) {
+      return Date.now() - this.state.startTime - this.state.pausedTime;
+    } else {
+      return -1;
+    }
+  }
+
+  createSubmitData() {
+    return {
+      user: this.state.user,
+      levels: this.state.levels,
+      interface: this.state.interfaceName,
+      totalTime: this.state.sessionTime,
+      data: {
+        idx: this.state.datum.idx,
+        answer: this.state.answer,
+        notes: this.state.note,
+        supportingFacts: this.state.selectedFactsArray,
+        operationRecord: this.state.operationRecords,
+        time: this.time(),
+      } as AnswerData,
+    } as AnswerSubmit;
+  }
+
   onSubmit() {
+    if (!this.state.answer) {
+      alert("You must type in the answer before submit.");
+      return;
+    }
+    const time = this.time();
+    this.$store.dispatch("addSessionTime", { time });
     axios
-      .post(
-        process.env.VUE_APP_API_URL + "/answer",
-        this.$store.getters.answerSubmitData
-      )
+      .post(process.env.VUE_APP_API_URL + "/answer", this.createSubmitData())
       .then(
         function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
@@ -118,12 +160,10 @@ export default class Collector extends Vue {
   }
 
   onSkip() {
-    this.$store.commit("setAnswer", "");
+    const time = this.time();
+    this.$store.dispatch("addSessionTime", { time });
     axios
-      .post(
-        process.env.VUE_APP_API_URL + "/answer",
-        this.$store.getters.answerSubmitData
-      )
+      .post(process.env.VUE_APP_API_URL + "/answer", this.createSubmitData())
       .then(
         function (this: Collector, response: AxiosResponse) {
           if (response.data.success == "true") {
@@ -177,6 +217,9 @@ export default class Collector extends Vue {
   }
 
   newQuestion(datum: Datum, save: boolean) {
+    if (!datum || !datum.idx) {
+      return;
+    }
     if (this.datum.idx && this.datum.idx != -1 && save) {
       this.previousIndices.push(this.datum.idx);
     }
@@ -229,6 +272,10 @@ export default class Collector extends Vue {
           this.ready = true;
         }.bind(this)
       );
+  }
+
+  togglePause() {
+    this.$store.dispatch("togglePause");
   }
 }
 </script>

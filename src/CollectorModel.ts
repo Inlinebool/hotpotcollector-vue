@@ -16,7 +16,7 @@ export default interface CollectorModel {
   startTime: number;
   pausedTime: number;
   pauseStartTime: number;
-  pauseEndTime: number;
+  sessionTime: number;
   isPaused: boolean;
   operationRecords: OperationRecord[];
   interfaceName: string;

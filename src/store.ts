@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import CollectorModel, { NameReference } from "./CollectorModel";
-import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord, Levels, ParagraphSimilarity, HitStatus } from "./Datum";
+import Datum, { FlattenedNumberedSentence, searchContext, AnswerSubmit, OperationRecord, Levels, ParagraphSimilarity, HitStatus, AnswerData } from "./Datum";
 
 Vue.use(Vuex);
 
@@ -10,7 +10,8 @@ export default new Vuex.Store({
     user: "anon",
     levels: { easy: true, medium: true, hard: true },
     datum: {} as Datum,
-    answer: "", note: "",
+    answer: "", 
+    note: "",
     rankedParagraphs: [] as ParagraphSimilarity[],
     rankedSentences: [] as number[],
     paragraphReference: {} as NameReference,
@@ -21,7 +22,7 @@ export default new Vuex.Store({
     startTime: -1,
     pausedTime: -1,
     pauseStartTime: -1,
-    pauseEndTime: -1,
+    sessionTime: 0,
     isPaused: false,
     operationRecords: [] as OperationRecord[],
     interfaceName: "Basic"
@@ -30,19 +31,6 @@ export default new Vuex.Store({
   getters: {
     hitStatus: state => {
       return searchContext(state.datum.context, state.searchQuery);
-    },
-    answerSubmitData: state => {
-      return {
-        user: state.user,
-        levels: state.levels,
-        data: {
-          idx: state.datum.idx,
-          answer: state.answer,
-          notes: state.note,
-          supportingFacts: state.selectedFactsArray,
-          operationRecord: state.operationRecords
-        }
-      } as AnswerSubmit;
     }
   },
 
@@ -66,10 +54,10 @@ export default new Vuex.Store({
       state.rankedParagraphs = paragraphs;
     },
     setAnswer(state, answer: string) {
-      state.answer = answer;
+      state.answer = answer ? answer : "";
     },
     setNote(state, note: string) {
-      state.note = note;
+      state.note = note ? note : "";
     },
     setSearchQuery(state, searchQuery: string) {
       state.searchQuery = searchQuery;
@@ -78,16 +66,25 @@ export default new Vuex.Store({
       state.startTime = time;
     },
     setPausedTime(state, time: number) {
-      state.pauseEndTime = time;
+      state.pausedTime = time;
     },
     setPaused(state, isPaused: boolean) {
       state.isPaused = isPaused;
+    },
+    setSessionTime(state, time: number) {
+      state.sessionTime = time;
+    },
+    togglePaused(state) {
+      state.isPaused = !state.isPaused;
     },
     setParagraphReference(state, reference: NameReference) {
       for (const oldReference in state.paragraphReference) {
         delete state.paragraphReference[oldReference];
       }
       Object.assign(state.paragraphReference, reference);
+    },
+    setPauseStartTime(state, time: number) {
+      state.pauseStartTime = time;
     },
     setSentenceReference(state, reference: NameReference) {
       for (const oldReference in state.sentenceReference) {
@@ -243,6 +240,22 @@ export default new Vuex.Store({
         data: "",
         time: time
       } as OperationRecord);
+    },
+    togglePause(context) {
+      if (context.state.startTime == -1) {
+        return;
+      } else {
+        context.commit("togglePaused");
+        if (context.state.isPaused) {
+          context.commit("setPauseStartTime", Date.now());
+        } else {
+          const pausedTime = Date.now() - context.state.pauseStartTime;
+          context.commit("setPausedTime", context.state.pausedTime + pausedTime);
+        }
+      }
+    },
+    addSessionTime(context, { time }) {
+      this.commit("setSessionTime", context.state.sessionTime + time);
     }
   },
 });

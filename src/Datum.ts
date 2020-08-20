@@ -42,6 +42,8 @@ export interface ParagraphSimilarity {
 export interface AnswerSubmit {
   user: string;
   levels: Levels;
+  interface: string;
+  totalTime: number;
   data: AnswerData;
 }
 
@@ -58,6 +60,7 @@ export interface AnswerData {
   notes: string;
   supportingFacts: number[];
   operationRecord: OperationRecord[];
+  time: number;
 }
 
 export interface OperationRecord {
