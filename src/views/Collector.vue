@@ -1,6 +1,6 @@
 <template>
   <v-card class="ma-3">
-    <v-overlay :value="paused" opacity="1">
+    <v-overlay :value="paused" opacity="1" color="black">
       <v-btn icon @click="togglePause">
         <v-icon>mdi-close</v-icon>
       </v-btn>
