@@ -5,7 +5,7 @@
         <v-row>
           <v-text-field label="Answer" v-model="answer" @input="onAnswerInput" outlined clearable></v-text-field>
         </v-row>
-        <v-row>
+        <v-row v-if="false">
           <v-textarea
             name="Note"
             label="Note"
@@ -34,7 +34,7 @@ import Component from "vue-class-component";
 import CollectorModel from "@/CollectorModel";
 
 @Component
-export default class Answer extends Vue {
+export default class CollectorAnswer extends Vue {
   get state() {
     return this.$store.state as CollectorModel;
   }

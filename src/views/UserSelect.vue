@@ -10,7 +10,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn to="/collector">Start</v-btn>
+      <v-btn @click="start">Start</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -21,17 +21,13 @@ import { Levels } from "@/Datum";
 import Component from "vue-class-component";
 import CollectorModel from "@/CollectorModel";
 
-interface InterfaceRoutes {
-  [interfaceName: string]: string;
-}
-
 @Component
 export default class UserSelect extends Vue {
   usernames = ["anon", "kairong", "josh", "mihai", "fan", "matt"];
 
   levelList = ["easy", "medium", "hard"];
 
-  interfaces = ["Basic", "Ranked"];
+  interfaces = ["Basic", "Ranked with Context", "Ranked without Context"];
 
   get state() {
     return this.$store.state as CollectorModel;
@@ -70,6 +66,17 @@ export default class UserSelect extends Vue {
 
   set selectedInterface(value: string) {
     this.$store.commit("setInterface", value);
+  }
+
+  start() {
+    if (this.state.interfaceName == "Basic") {
+      this.$router.push({ name: "collector" });
+    } else {
+      this.$router.push({
+        name: "instruction",
+        params: { pageParam: "ranked" },
+      });
+    }
   }
 }
 </script>

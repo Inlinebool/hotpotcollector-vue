@@ -2,19 +2,31 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Collector from '@/views/Collector.vue';
 import UserSelect from '../views/UserSelect.vue';
+import Instruction from '@/views/Instruction.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: '/collector',
-    name: 'Collector',
+    name: 'collector',
     component: Collector
   },
   {
-    path: '/',
-    name: "UserSelect",
+    path: '/userselect',
+    name: "userselect",
     component: UserSelect
+  },
+  {
+    path: '/',
+    name: "root",
+    redirect: "/instruction/1"
+  },
+  {
+    path: '/instruction/:pageParam',
+    name: "instruction",
+    props: true,
+    component: Instruction
   }
   // {
   //   path: '/about',

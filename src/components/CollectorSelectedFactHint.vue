@@ -3,7 +3,7 @@
     <v-card-title>Selected Facts:</v-card-title>
     <v-card-text>
       <v-row v-for="sentence in selectedSentences" :key="sentence[0]" class="my-2">
-        <Sentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="false" />
+        <CollectorSentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="false" />
       </v-row>
     </v-card-text>
   </v-card>
@@ -12,16 +12,16 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Sentence from "./Sentence.vue";
+import CollectorSentence from "./CollectorSentence.vue";
 import { FlattenedNumberedSentence, NumberedSentence } from "../Datum";
 import CollectorModel from "@/CollectorModel";
 
 @Component({
   components: {
-    Sentence,
+    CollectorSentence,
   },
 })
-export default class SelecteFactHint extends Vue {
+export default class CollectorSelecteFactHint extends Vue {
   get state() {
     return this.$store.state as CollectorModel;
   }

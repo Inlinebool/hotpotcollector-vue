@@ -71,7 +71,7 @@ import CollectorModel, { NameReference } from "@/CollectorModel";
 @Component({
   name: "Sentence",
 })
-export default class Sentence extends Vue {
+export default class CollectorSentence extends Vue {
   @Prop(Number) readonly sentenceNumber!: number;
   @Prop(Boolean) readonly enabled!: boolean;
   @Prop(Boolean) readonly showTitle!: boolean;

@@ -19,7 +19,7 @@ import Component from "vue-class-component";
 import CollectorModel from '@/CollectorModel';
 
 @Component
-export default class Question extends Vue {
+export default class CollectorQuestion extends Vue {
   tooltip =
     "For the following question, type in the correct answer based on the given paragraphs and click on the sentence that support your answer.";
 

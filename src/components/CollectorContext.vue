@@ -20,14 +20,14 @@
     </v-toolbar>
     <v-card-text>
       <v-expansion-panels multiple v-model="openedParagraphs" v-if="!ranked && ready">
-        <ParagraphPanel
+        <CollectorContextParagraphPanel
           v-for="(index) in range(context.length)"
           :key="index"
           :paragraphNumber="rankedParagraphIndices[index]"
           @toggled="onParagraphToggled"
-        ></ParagraphPanel>
+        ></CollectorContextParagraphPanel>
       </v-expansion-panels>
-      <RankedContextContent v-if="ranked && ready"></RankedContextContent>
+      <CollectorContextRankedContent v-if="ranked && ready" :contexted="contexted" />
     </v-card-text>
   </v-card>
 </template>
@@ -35,7 +35,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import ParagraphPanel from "./ParagraphPanel.vue";
+import CollectorContextParagraphPanel from "./CollectorContextParagraphPanel.vue";
 import { Watch, Prop } from "vue-property-decorator";
 import {
   Paragraph,
@@ -44,16 +44,16 @@ import {
   ParagraphSimilarity,
 } from "../Datum";
 import CollectorModel, { NameReference } from "@/CollectorModel";
-import RankedContextContent from "@/components/RankedContextContent.vue";
+import CollectorContextRankedContent from "@/components/CollectorContextRankedContent.vue";
 import _ from "lodash";
 
 @Component({
   components: {
-    ParagraphPanel,
-    RankedContextContent,
+    CollectorContextParagraphPanel,
+    CollectorContextRankedContent,
   },
 })
-export default class Context extends Vue {
+export default class CollectorContext extends Vue {
   @Prop(Boolean) readonly ready!: boolean;
 
   get state() {
@@ -111,7 +111,7 @@ export default class Context extends Vue {
   }
 
   get contexted(): boolean {
-    return this.state.interfaceName == "Ranked without Context";
+    return this.state.interfaceName != "Ranked without Context";
   }
 
   get openedParagraphTitles() {

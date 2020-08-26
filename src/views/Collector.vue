@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-3">
+  <v-card class="ma-auto" max-width="1400px">
     <v-overlay :value="paused" opacity="1" color="black">
       <v-btn icon @click="togglePause">
         <v-icon>mdi-close</v-icon>
@@ -29,19 +29,19 @@
       <v-container>
         <v-row>
           <v-col>
-            <Question :question="question" />
+            <CollectorQuestion :question="question" />
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="8">
-            <Context :ready="ready"></Context>
+            <CollectorContext :ready="ready" />
           </v-col>
           <v-col cols="4">
             <v-row>
-              <SelectedFactHint :contextFlattened="contextFlattened" />
+              <CollectorSelectedFactHint :contextFlattened="contextFlattened" />
             </v-row>
             <v-row>
-              <Answer @submit="onSubmit" @skip="onSkip" />
+              <CollectorAnswer @submit="onSubmit" @skip="onSkip" />
             </v-row>
           </v-col>
         </v-row>
@@ -52,10 +52,10 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Question from "../components/Question.vue";
-import Context from "../components/Context.vue";
-import Answer from "../components/Answer.vue";
-import SelectedFactHint from "../components/SelectedFactHint.vue";
+import CollectorQuestion from "../components/CollectorQuestion.vue";
+import CollectorContext from "../components/CollectorContext.vue";
+import CollectorAnswer from "../components/CollectorAnswer.vue";
+import CollectorSelectedFactHint from "../components/CollectorSelectedFactHint.vue";
 import Component from "vue-class-component";
 import axios, { AxiosResponse } from "axios";
 import Datum, {
@@ -69,10 +69,10 @@ import { Watch } from "vue-property-decorator";
 
 @Component({
   components: {
-    Question,
-    Context,
-    Answer,
-    SelectedFactHint,
+    CollectorQuestion,
+    CollectorContext,
+    CollectorAnswer,
+    CollectorSelectedFactHint,
   },
 })
 export default class Collector extends Vue {
@@ -148,17 +148,15 @@ export default class Collector extends Vue {
     this.$store.dispatch("addSessionTime", { time });
     const submitData = this.createSubmitData();
     console.log(submitData);
-    axios
-      .post(process.env.VUE_APP_API_URL + "/answer", submitData)
-      .then(
-        function (this: Collector, response: AxiosResponse) {
-          if (response.data.success == "true") {
-            this.randomQuestion(true);
-          } else {
-            alert(response.data);
-          }
-        }.bind(this)
-      );
+    axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
+      function (this: Collector, response: AxiosResponse) {
+        if (response.data.success == "true") {
+          this.randomQuestion(true);
+        } else {
+          alert(response.data);
+        }
+      }.bind(this)
+    );
   }
 
   onSkip() {
@@ -166,17 +164,15 @@ export default class Collector extends Vue {
     this.$store.dispatch("addSessionTime", { time });
     const submitData = this.createSubmitData();
     console.log(submitData);
-    axios
-      .post(process.env.VUE_APP_API_URL + "/answer", submitData)
-      .then(
-        function (this: Collector, response: AxiosResponse) {
-          if (response.data.success == "true") {
-            this.randomQuestion(true);
-          } else {
-            alert(response.data);
-          }
-        }.bind(this)
-      );
+    axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
+      function (this: Collector, response: AxiosResponse) {
+        if (response.data.success == "true") {
+          this.randomQuestion(true);
+        } else {
+          alert(response.data);
+        }
+      }.bind(this)
+    );
   }
 
   goto() {

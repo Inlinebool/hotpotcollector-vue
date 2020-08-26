@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <v-expansion-panels>
+    <v-expansion-panels v-if="contexted">
       <v-expansion-panel>
-        <v-expansion-panel-header>Paragraph Select</v-expansion-panel-header>
+        <v-expansion-panel-header>Topic Select</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-card>
-            <v-row no-gutters>
+            <v-row no-gutters class="small">
               <v-switch
                 no-gutters
                 label="Select All"
@@ -15,7 +15,7 @@
               ></v-switch>
             </v-row>
             <v-divider />
-            <v-row no-gutters>
+            <v-row no-gutters class="small">
               <v-col v-for="paragraph in context" :key="paragraph[0]" cols="3">
                 <v-checkbox
                   :label="getParagraphHeader(paragraph[0])"
@@ -32,7 +32,7 @@
     </v-expansion-panels>
     <transition-group name="sentence-transition" tag="p">
       <v-row v-for="sentence in enabledFacts" :key="sentence[0]" class="my-2 sentence-item">
-        <Sentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="true" />
+        <CollectorSentence :sentenceNumber="sentence[0]" :enabled="true" :showTitle="contexted" />
       </v-row>
     </transition-group>
   </v-container>
@@ -41,15 +41,16 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Sentence from "./Sentence.vue";
-import { Watch } from "vue-property-decorator";
+import CollectorSentence from "./CollectorSentence.vue";
+import { Watch, Prop } from "vue-property-decorator";
 import { FlattenedNumberedSentence, Paragraph, HitStatus } from "../Datum";
 import CollectorModel, { NameReference } from "@/CollectorModel";
 
 @Component({
-  components: { Sentence },
+  components: { CollectorSentence },
 })
 export default class RankedContextContent extends Vue {
+  @Prop(Boolean) readonly contexted!: boolean;
   get state() {
     return this.$store.state as CollectorModel;
   }
@@ -159,5 +160,14 @@ export default class RankedContextContent extends Vue {
 }
 .sentence-transition-active {
   position: absolute;
+}
+.small .v-input {
+  margin-top: 8px;
+}
+.small label {
+  font-size: 14px;
+}
+col {
+  margin: 0px
 }
 </style>
