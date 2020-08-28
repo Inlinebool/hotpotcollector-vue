@@ -34,7 +34,7 @@
         <p>Here is an overview of the interface. At the top is the question, and the facts are listed below grouped by topic.</p>
         <p>Each topic is tagged with a capital letter, and each fact is tagged by their topic as well as its number within the topic.</p>
         <p>
-          In the facts, all words that apear in the question will have a
+          In the facts, all words that appear in the question will have a
           <span class="question">blue</span> background.
         </p>
         <v-divider class="my-5"></v-divider>
