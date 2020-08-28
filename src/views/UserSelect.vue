@@ -1,9 +1,9 @@
 <template>
   <v-card class="mx-auto" width="400">
-    <v-card-title>User Select</v-card-title>
+    <v-card-title>Interface Settings</v-card-title>
     <v-card-text>
       <v-form>
-        <v-select label="Username" :items="usernames" v-model="user"></v-select>
+        <v-select label="Username" :items="usernames" v-model="user" v-if="false"></v-select>
         <v-select label="Difficulty Levels" :items="levelList" v-model="selectedLevels" multiple></v-select>
         <v-select label="Interface" :items="interfaces" v-model="selectedInterface"></v-select>
       </v-form>

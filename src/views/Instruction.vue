@@ -106,7 +106,8 @@
           >SUBMIT AND NEXT QUESTION</span> to submit the answer/supporting facts and go to the next question.
         </p>
         <p>
-          If you would like to skip this question, you could click on the <span class="strong-1">SKIP AND NEXT QUESTION</span> to skip to the next question.
+          If you would like to skip this question, you could click on the
+          <span class="strong-1">SKIP AND NEXT QUESTION</span> to skip to the next question.
         </p>
         <v-divider class="my-5"></v-divider>
         <v-img src="../img/Answer_A.png" contain max-width="100%"></v-img>
@@ -192,7 +193,9 @@ export default class Instruction extends Vue {
           case "Ranked without Context":
             return 9;
           default:
-            alert("interface should have been selected");
+            this.$router.push({
+              name: "userselect",
+            });
             return -1;
         }
       } else {
