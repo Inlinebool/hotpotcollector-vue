@@ -158,6 +158,8 @@ export default new Vuex.Store({
       context.commit("setPausedTime", 0);
       context.commit("setPaused", false);
       context.commit("clearOperationRecords");
+      context.commit("setAnswer", "");
+      context.commit("setNote", "");
       const paragraphReference = {} as NameReference;
       const sentenceReference = {} as NameReference;
       let letterCode = "A".charCodeAt(0);

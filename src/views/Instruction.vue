@@ -24,10 +24,9 @@
           <span class="strong-1">identify the facts</span> that are used to explain why the answer is correct.
         </p>
         <p>
-          Each question will have
-          <span class="strong-1">at least 1</span> fact that supports the answer. On average, a question typically has 2 supporting facts, but it could be more.
+          Each question will need
+          <span class="strong-1">at least 1</span> fact to show that the answer is correct. Most questions need 2, sometimes more facts.
         </p>
-        <p>The goal of this work is to study the effectiveness of different visualization techniques in gathering human supervision for the purpose of improving QA systems. Specifically, we seek to understand how best to present collections of facts so that humans can most accurately and efficiently discover the facts that support a correct answer to the question. Visualization is used to help organize and filter the available information.</p>
         <p>In this tutorial we will introduce you to the entire procedure with a sample interface. The actual interface you will see in the study will be organized differently, but the task will be the same.</p>
         <p>Please do this study on a desktop machine or a laptop with a modern web browser, for example Google Chrome.</p>
       </div>
@@ -86,10 +85,28 @@
         <p>
           Now we
           <span class="strong-1">click</span> on Fact G-2 to select it, and we
-          <span class="strong-1">type</span> the answer “Rings” in the answer box. Finally, after selecting all the supporting facts and typing in the answer, we click
+          <span class="strong-1">type</span> the answer “Rings” in the answer box.
+        </p>
+        <p>
+          As you type in the answer, you'll notice that your answer is also
+          <span
+            class="answer"
+          >highlighted</span> within the facts. In fact, for most questions, the answer is either a
           <span
             class="strong-1"
-          >Submit and Next Question</span> to submit the answer/supporting facts and go to the next question.
+          >yes or no</span>, or a span from the facts that you use to answer the question, that is,
+          <span
+            class="strong-1"
+          >a span from the facts that you select</span>.
+        </p>
+        <p>
+          Finally, after selecting all the supporting facts and typing in the answer, we click
+          <span
+            class="strong-1"
+          >SUBMIT AND NEXT QUESTION</span> to submit the answer/supporting facts and go to the next question.
+        </p>
+        <p>
+          If you would like to skip this question, you could click on the <span class="strong-1">SKIP AND NEXT QUESTION</span> to skip to the next question.
         </p>
         <v-divider class="my-5"></v-divider>
         <v-img src="../img/Answer_A.png" contain max-width="100%"></v-img>
@@ -264,5 +281,11 @@ export default class Instruction extends Vue {
 }
 .selected {
   background-color: #f3e5f5;
+}
+.answer {
+  /* font-weight: 700; */
+  /* font-style: italic; */
+  text-decoration: underline;
+  color: #ffa726;
 }
 </style>
