@@ -2,25 +2,66 @@
   <v-card class="ma-3">
     <v-card-text>
       <v-container>
-        <v-row>
-          <v-text-field label="Answer" v-model="answer" @input="onAnswerInput" outlined clearable></v-text-field>
+        <v-row class="grey lighten-4 mb-2">
+          <p>Hint:</p>
+          <p>In many cases, the answer can either be a yes or no, or a span from the facts that can be used to answer the question, i.e., the facts you have selected.</p>
         </v-row>
-        <v-row v-if="false">
-          <v-textarea
-            name="Note"
-            label="Note"
-            v-model="note"
-            @input="onNoteInput"
-            outlined
-            clearable
-          ></v-textarea>
+        <v-form v-model="answerValid">
+          <v-row>
+            <v-text-field
+              label="Answer"
+              v-model="answer"
+              @input="onAnswerInput"
+              outlined
+              clearable
+              :rules="answerRule"
+              required
+            ></v-text-field>
+          </v-row>
+        </v-form>
+        <v-row class="ml-0 text-caption">
+          <p
+            v-if="!valid"
+            class="red--text"
+          >You must select at least one fact that you use to answer the question.</p>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn small @click="onSubmit">Submit and Next Question</v-btn>
+            <v-btn
+              small
+              @click="onSubmit"
+              :disabled="!valid || !answerValid"
+            >Submit and Next Question</v-btn>
           </v-col>
           <v-col>
-            <v-btn small @click="onSkip">Skip and Next Question</v-btn>
+            <v-dialog
+              v-model="dialog"
+              width="500"
+              persistent
+              overlay-opacity="1"
+              overlay-color="black"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn small v-on="on" v-bind="attrs" @click="onSkip">Skip and Next Question</v-btn>
+              </template>
+              <v-card>
+                <v-card-title>Please tell us why you skipped this question:</v-card-title>
+                <v-card-text>
+                  <v-textarea
+                    name="Note"
+                    placeholder="e.g. question unclear, couldn't find answer, etc."
+                    v-model="note"
+                    outlined
+                    clearable
+                  ></v-textarea>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn small @click="onSkipAbort">Return to Question</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn small @click="onSkipSubmit">Submit</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-col>
         </v-row>
       </v-container>
@@ -35,6 +76,14 @@ import CollectorModel from "@/CollectorModel";
 
 @Component
 export default class CollectorAnswer extends Vue {
+  dialog = false;
+  answerValid = false;
+  answerRule = [(v: string) => !!v || "Answer cannot be empty."];
+
+  get valid() {
+    return this.state.selectedFactsArray.length > 0;
+  }
+
   get state() {
     return this.$store.state as CollectorModel;
   }
@@ -61,6 +110,19 @@ export default class CollectorAnswer extends Vue {
   }
 
   onSkip() {
+    const time = Date.now() - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addSkipClickedRecord", { time });
+    this.$store.dispatch("togglePause");
+  }
+
+  onSkipAbort() {
+    this.$store.dispatch("togglePause");
+    this.dialog = false;
+  }
+
+  onSkipSubmit() {
+    this.$store.dispatch("togglePause");
+    this.dialog = false;
     this.$emit("skip");
     this.clear();
   }
@@ -72,12 +134,7 @@ export default class CollectorAnswer extends Vue {
 
   onAnswerInput(value: string) {
     const time = Date.now() - this.state.startTime - this.state.pausedTime;
-    this.$store.dispatch("addAnswerTypeRecord", { value, time });
-  }
-
-  onNoteInput(value: string) {
-    const time = Date.now() - this.state.startTime - this.state.pausedTime;
-    this.$store.dispatch("addNoteTypeRecord", { value, time });
+    this.$store.dispatch("addAnswerTypeRecord", { typedAnswer: value, time });
   }
 }
 </script>

@@ -137,7 +137,10 @@ export default class CollectorContext extends Vue {
   onParagraphToggled() {
     const time = this.time();
     const titles = this.openedParagraphTitles;
-    this.$store.dispatch("addToggleParagraphRecord", { titles, time });
+    this.$store.dispatch("addToggleParagraphRecord", {
+      openedParagraphs: titles,
+      time,
+    });
   }
 
   @Watch("context")

@@ -168,6 +168,6 @@ export default class RankedContextContent extends Vue {
   font-size: 14px;
 }
 col {
-  margin: 0px
+  margin: 0px;
 }
 </style>

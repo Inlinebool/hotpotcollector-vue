@@ -2,7 +2,7 @@
   <v-card class="ma-3" width="100%">
     <v-card-text>
       <v-container>
-        <v-row>
+        <v-row v-if="false">
           <div class="text-subtitle-1 mb-3" v-text="tooltip"></div>
         </v-row>
         <v-row>

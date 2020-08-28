@@ -10,7 +10,7 @@ export default new Vuex.Store({
     user: "anon",
     levels: { easy: true, medium: true, hard: true },
     datum: {} as Datum,
-    answer: "", 
+    answer: "",
     note: "",
     rankedParagraphs: [] as ParagraphSimilarity[],
     rankedSentences: [] as number[],
@@ -213,9 +213,9 @@ export default new Vuex.Store({
         time: time
       } as OperationRecord);
     },
-    addToggleContextRecord(context, { factNumber, time }) {
+    addToggleSentenceContextRecord(context, { factNumber, time }) {
       context.commit("appendOperationRecord", {
-        name: "toggle_context",
+        name: "toggle_sentence_context",
         data: factNumber,
         time: time
       } as OperationRecord);
@@ -256,6 +256,13 @@ export default new Vuex.Store({
     },
     addSessionTime(context, { time }) {
       this.commit("setSessionTime", context.state.sessionTime + time);
+    },
+    addSkipClickedRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "skip_clicked",
+        data: "",
+        time: time
+      } as OperationRecord);
     }
   },
 });

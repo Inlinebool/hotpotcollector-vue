@@ -25,11 +25,19 @@
               </span>
             </span>
           </v-overlay>
-          <v-overlay absolute class="justify-start text--primary" opacity="0">
+          <v-overlay absolute class="justify-start text--primary" opacity="0" color="white">
             <span class="mr-2">
               <span>
                 <span>{{sentenceNumberText}}</span>
                 <span v-html="searchHighlighted" class="ml-1"></span>
+              </span>
+            </span>
+          </v-overlay>
+          <v-overlay absolute class="justify-start text--primary" opacity="0" color="white">
+            <span class="mr-2 no-text">
+              <span>
+                <span>{{sentenceNumberText}}</span>
+                <span v-html="answerHighlighted" class="ml-1"></span>
               </span>
             </span>
           </v-overlay>
@@ -124,20 +132,36 @@ export default class CollectorSentence extends Vue {
     }
   }
 
+  get answerHighlighted() {
+    let answerHighlighedSentence = this.sentence[1];
+    if (this.state.answer) {
+      const answerQuery = new RegExp(this.state.answer, "gi");
+      answerHighlighedSentence = answerHighlighedSentence.replace(
+        answerQuery,
+        '<span class="answerHit">$&</span>'
+      );
+    }
+    return answerHighlighedSentence.trim();
+  }
+
   get questionHighlighted() {
-    let questionWords = this.question.split(/\W+/);
+    const regexpBMPWord = /(\w|[\u0080-\uFFFF])+/gu;
+    let questionWords = this.question.match(regexpBMPWord);
     questionWords = sw.removeStopwords(questionWords);
     let questionHighlightedSentence = this.sentence[1];
-    questionWords.forEach((word: string) => {
-      if (!word || word == "s") {
-        return;
-      }
-      const query = RegExp("\\b" + word + "\\b", "gi");
-      questionHighlightedSentence = questionHighlightedSentence.replace(
-        query,
-        '<span class="questionHighlight">$&</span>'
-      );
-    });
+    if (questionWords) {
+      questionWords.forEach((word: string) => {
+        if (!word || word == "s") {
+          return;
+        }
+        const query = RegExp("\\b" + word + "\\b", "gi");
+        questionHighlightedSentence = questionHighlightedSentence.replace(
+          query,
+          '<span class="questionHighlight">$&</span>'
+        );
+      });
+    }
+
     return questionHighlightedSentence.trim();
   }
 
@@ -232,7 +256,10 @@ export default class CollectorSentence extends Vue {
     this.expand = !this.expand;
     const factNumber = this.sentence[0];
     const time = this.time();
-    this.$store.dispatch("addToggleContextRecord", { factNumber, time });
+    this.$store.dispatch("addToggleSentenceContextRecord", {
+      factNumber,
+      time,
+    });
   }
 }
 </script>
@@ -242,9 +269,15 @@ export default class CollectorSentence extends Vue {
   background-color: #bbdefb;
 }
 .searchHit {
-  font-weight: 700;
-  font-style: italic;
+  /* font-weight: 700; */
+  /* font-style: italic; */
   color: #d81b60;
+}
+.answerHit {
+  /* font-weight: 700; */
+  /* font-style: italic; */
+  text-decoration: underline;
+  color: #ffa726;
 }
 .selected,
 .selectedHighlight {
