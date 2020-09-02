@@ -34,6 +34,14 @@ export interface RankParagraphResponse {
   ranked_paragraphs: string[];
 }
 
+export interface NewUserResponse {
+  contexted: boolean;
+  practice_questions: number[];
+  basic_questions: number[];
+  ranked_questions: number[];
+  user: string;
+}
+
 export interface ParagraphSimilarity {
   0: string;
   1: number;
@@ -41,10 +49,14 @@ export interface ParagraphSimilarity {
 
 export interface AnswerSubmit {
   user: string;
-  levels: Levels;
   interface: string;
   totalTime: number;
-  data: AnswerData;
+  data: AnswerData | QuestionnaireData;
+}
+
+export interface QuestionnaireData {
+  contexted: boolean;
+  result: string[];
 }
 
 export interface Levels {

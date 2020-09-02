@@ -6,7 +6,7 @@
           <p>Hint:</p>
           <p>In many cases, the answer can either be a yes or no, or a span from the facts that can be used to answer the question, i.e., the facts you have selected.</p>
         </v-row>
-        <v-form v-model="answerValid">
+        <v-form v-model="answerValid" ref="answerForm">
           <v-row>
             <v-text-field
               label="Answer"
@@ -63,6 +63,9 @@
               </v-card>
             </v-dialog>
           </v-col>
+          <v-col>
+            <v-btn small v-if="false" @click="onBackToInstructions">Back to Instructions</v-btn>
+          </v-col>
         </v-row>
       </v-container>
     </v-card-text>
@@ -104,9 +107,18 @@ export default class CollectorAnswer extends Vue {
     this.$store.commit("setNote", value);
   }
 
+  get practice() {
+    return !this.state.practiceDone;
+  }
+
   onSubmit() {
     this.$emit("submit");
     this.clear();
+  }
+
+  onBackToInstructions() {
+    this.$store.commit("setInstructionDone", false);
+    this.$router.replace({ name: "instruction" });
   }
 
   onSkip() {
@@ -128,8 +140,8 @@ export default class CollectorAnswer extends Vue {
   }
 
   clear() {
-    this.answer = "";
-    this.note = "";
+    const answerForm = this.$refs.answerForm as any;
+    answerForm.reset();
   }
 
   onAnswerInput(value: string) {

@@ -11,7 +11,7 @@
           >Question Answering (QA)</span> systems.
         </p>
         <p>
-          In this study you will be presented with a visual interface for QA. You will be given a
+          You will be presented with a visual interface for QA. You will be given a
           <span
             class="strong-1"
           >question</span> and a
@@ -25,14 +25,14 @@
         </p>
         <p>
           Each question will need
-          <span class="strong-1">at least 1</span> fact to show that the answer is correct. Most questions need 2, sometimes more facts.
+          <span class="strong-1">at least 1</span> fact to show that the answer is correct. Most questions need 2, sometimes more, facts.
         </p>
         <p>In this tutorial we will introduce you to the entire procedure with a sample interface. The actual interface you will see in the study will be organized differently, but the task will be the same.</p>
-        <p>Please do this study on a desktop machine or a laptop with a modern web browser, for example Google Chrome.</p>
       </div>
       <div v-if="page == 2">
         <p>Here is an overview of the interface. At the top is the question, and the facts are listed below grouped by topic.</p>
         <p>Each topic is tagged with a capital letter, and each fact is tagged by their topic as well as its number within the topic.</p>
+        <p>You can pause the process by clicking on the "PAUSE" button on the top left corner.</p>
         <p>
           In the facts, all words that appear in the question will have a
           <span class="question">blue</span> background.
@@ -106,16 +106,26 @@
           >SUBMIT AND NEXT QUESTION</span> to submit the answer/supporting facts and go to the next question.
         </p>
         <p>
-          If you would like to skip this question, you could click on the
-          <span class="strong-1">SKIP AND NEXT QUESTION</span> to skip to the next question.
+          Because these questions are generated in a crowd-sourced way, some of them might be hard to understand or find an answer. If you would like to skip a question for any reason, you could click on
+          <span
+            class="strong-1"
+          >SKIP AND NEXT QUESTION</span> to skip to the next question.
         </p>
         <v-divider class="my-5"></v-divider>
         <v-img src="../img/Answer_A.png" contain max-width="100%"></v-img>
       </div>
       <div v-if="page == 7">
-        <p>Next, try to answer 10 questions on your own. Try to make use of the tools we provided and complete the task as soon and as accurately as possible. We will time your process and record your operations (search, scroll, click, type, etc.) with the interface.</p>
+        <p>Next, try to answer 2 questions on your own as a practice run. Feel free to explore the interface -- we won't time you or record any data for these two questions. If you need to refresh the instructions, click the "BACK" button.</p>
       </div>
       <div v-if="page == 8">
+        <p>Now that you have familiar yourself with the task and the interface, try to answer the next 10 questions as quickly and as accurately as possible. For these questions, we will time your process and record your operations (search, scroll, click, type, etc.) with the interface.</p>
+        <p class="red--text darken-3">
+          Note: You will
+          <span class="font-weight-bold font-italic">not</span> be able to go back to the instructions once you hit "START".
+        </p>
+        <p>If you are still not ready, click the "BACK" button to start over the instructions.</p>
+      </div>
+      <div v-if="page == 9">
         <p>Now try 10 more questions with a different interface.</p>
         <p>
           In this interface, the facts are no longer grouped by their topic. Rather, they are
@@ -135,7 +145,7 @@
         <v-divider class="my-5"></v-divider>
         <v-img src="../img/context_B.png" contain max-width="100%"></v-img>
       </div>
-      <div v-if="page == 9">
+      <div v-if="page == 10">
         <p>Now try 10 more questions with a different interface.</p>
         <p>
           In this interface, the facts are no longer grouped by their topic. Rather, they are
@@ -155,11 +165,10 @@
       </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn v-if="page > 1" @click="previousPage">Previous Page</v-btn>
+      <v-btn v-if="page > 1 && page <= 8" @click="previousPage">Back</v-btn>
       <v-spacer></v-spacer>
-      <v-btn v-if="page < 7" @click="nextPage">Next Page</v-btn>
-      <v-btn v-if="page == 7" to="/userselect">Start</v-btn>
-      <v-btn v-if="page > 7" to="/collector">Start</v-btn>
+      <v-btn v-if="page < 7" @click="nextPage">Next</v-btn>
+      <v-btn v-if="page >= 7" @click="start">Start</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -172,63 +181,72 @@ import CollectorModel from "@/CollectorModel";
 
 @Component
 export default class Instruction extends Vue {
-  @Prop(String) readonly pageParam: string | undefined;
+  page = 1;
 
   get state() {
     return this.$store.state as CollectorModel;
   }
 
-  get page() {
-    if (!this.pageParam) {
-      this.$router.push({
-        name: "instruction",
-        params: { pageParam: "1" },
-      });
-      return -1;
-    } else {
-      if (this.pageParam == "ranked") {
-        switch (this.state.interfaceName) {
-          case "Ranked with Context":
-            return 8;
-          case "Ranked without Context":
-            return 9;
-          default:
-            this.$router.push({
-              name: "userselect",
-            });
-            return -1;
-        }
+  created() {
+    if (!this.state.consent) {
+      this.$router.replace({ name: "consent" });
+    } else if (!this.state.instructionDone) {
+      this.page = 1;
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      !this.state.basicDone
+    ) {
+      this.page = 8;
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      this.state.basicDone
+    ) {
+      if (this.state.contexted) {
+        this.page = 9;
       } else {
-        const page = parseInt(String(this.pageParam));
-        if (!page || page < 0 || page > 7) {
-          this.$router.push({
-            name: "instruction",
-            params: { pageParam: "1" },
-          });
-        }
-        return page;
+        this.page = 10;
       }
+    } else {
+      this.$router.replace({ name: "consent" });
     }
   }
 
+  start() {
+    if (this.page == 7) {
+      this.$store.commit("setInstructionDone", true);
+    }
+    if (this.page == 7 || this.page == 8) {
+      this.$store.commit("setInterface", "Basic");
+    }
+    if (this.page == 9) {
+      this.$store.commit("setInterface", "Ranked with Context");
+    }
+    if (this.page == 10) {
+      this.$store.commit("setInterface", "Ranked without Context");
+    }
+    this.$router.replace({ name: "collector" });
+  }
+
   nextPage() {
-    this.$router.push({
-      name: "instruction",
-      params: { pageParam: (this.page + 1).toString() },
-    });
+    this.page += 1;
   }
 
   previousPage() {
-    this.$router.push({
-      name: "instruction",
-      params: { pageParam: (this.page - 1).toString() },
-    });
+    if (this.page == 8) {
+      this.$store.commit("setInstructionDone", false);
+      this.$store.commit("setPracticeDone", false);
+      this.page = 1;
+    } else {
+      this.page -= 1;
+    }
   }
 
   get pageWidth() {
     switch (this.page) {
       case 1:
-        return 600;
+        return 800;
       case 2:
       case 3:
       case 4:
@@ -236,10 +254,10 @@ export default class Instruction extends Vue {
       case 6:
         return 1200;
       case 7:
-        return 600;
       case 8:
-        return 1200;
+        return 800;
       case 9:
+      case 10:
         return 1200;
       default:
         return 1200;
@@ -269,7 +287,7 @@ export default class Instruction extends Vue {
 <style>
 .strong-1 {
   font-weight: bold;
-  text-decoration: underline;
+  /* text-decoration: underline; */
 }
 .strong-2 {
   font-style: italic;
@@ -290,5 +308,9 @@ export default class Instruction extends Vue {
   /* font-style: italic; */
   text-decoration: underline;
   color: #ffa726;
+}
+.strong-3 {
+  font-weight: bold;
+  color: red;
 }
 </style>

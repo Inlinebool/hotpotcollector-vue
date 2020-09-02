@@ -1,8 +1,15 @@
 import Datum, { OperationRecord, ParagraphSimilarity, Levels } from "./Datum";
 
 export default interface CollectorModel {
+  consent: boolean;
+  instructionDone: boolean;
+  practiceDone: boolean;
+  basicDone: boolean;
+  rankedDone: boolean;
   user: string;
-  levels: Levels;
+  practiceQuestions: number[];
+  basicQuestions: number[];
+  rankedQuestions: number[];
   datum: Datum;
   rankedParagraphs: ParagraphSimilarity[];
   rankedSentences: number[];
@@ -20,6 +27,7 @@ export default interface CollectorModel {
   isPaused: boolean;
   operationRecords: OperationRecord[];
   interfaceName: string;
+  contexted: boolean;
 }
 
 export interface NameReference {

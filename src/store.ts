@@ -8,7 +8,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: "anon",
-    levels: { easy: true, medium: true, hard: true },
+    consent: false,
+    instructionDone: false,
+    practiceDone: false,
+    basicDone: false,
+    rankedDone: false,
+    practiceQuestions: [] as number[],
+    basicQuestions: [] as number[],
+    rankedQuestions: [] as number[],
     datum: {} as Datum,
     answer: "",
     note: "",
@@ -25,7 +32,8 @@ export default new Vuex.Store({
     sessionTime: 0,
     isPaused: false,
     operationRecords: [] as OperationRecord[],
-    interfaceName: "Basic"
+    interfaceName: "Basic",
+    contexted: false
   } as CollectorModel,
 
   getters: {
@@ -38,8 +46,29 @@ export default new Vuex.Store({
     setUser(state, user: string) {
       state.user = user;
     },
-    setLevels(state, levels: Levels) {
-      state.levels = levels;
+    setBasicQuestions(state, basicQuestions: number[]) {
+      state.basicQuestions = basicQuestions;
+    },
+    setPracticeQuestions(state, practiceQuestions: number[]) {
+      state.practiceQuestions = practiceQuestions;
+    },
+    setRankedQuestions(state, rankedQuestions: number[]) {
+      state.rankedQuestions = rankedQuestions;
+    },
+    setConsent(state, consent: boolean) {
+      state.consent = consent;
+    },
+    setPracticeDone(state, practiceDone: boolean) {
+      state.practiceDone = practiceDone;
+    },
+    setBasicDone(state, basicDone: boolean) {
+      state.basicDone = basicDone;
+    },
+    setRankedDone(state, rankedDone: boolean) {
+      state.rankedDone = rankedDone;
+    },
+    setInstructionDone(state, instructionDone: boolean) {
+      state.instructionDone = instructionDone;
     },
     setDatum(state, datum: Datum) {
       state.datum = datum;
@@ -112,6 +141,9 @@ export default new Vuex.Store({
     },
     setInterface(state, interfaceName: string) {
       state.interfaceName = interfaceName;
+    },
+    setContexted(state, contexted: boolean) {
+      state.contexted = contexted;
     }
   },
 

@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Collector from '@/views/Collector.vue';
-import UserSelect from '../views/UserSelect.vue';
 import Instruction from '@/views/Instruction.vue';
+import Consent from '@/views/Consent.vue';
+import Questionnaire from "@/views/Questionnaire.vue"
 
 Vue.use(VueRouter);
 
@@ -13,28 +14,28 @@ const routes: Array<RouteConfig> = [
     component: Collector
   },
   {
-    path: '/userselect',
-    name: "userselect",
-    component: UserSelect
+    path: '/consent',
+    name: "consent",
+    component: Consent
+  },
+  {
+    path: '/instruction',
+    name: "instruction",
+    component: Instruction
+  },
+  {
+    path: '/questionnaire',
+    name: "questionnaire",
+    component: Questionnaire
   },
   {
     path: '/',
     name: "root",
-    redirect: "/instruction/1"
+    redirect: "/consent"
   },
-  {
-    path: '/instruction/:pageParam',
-    name: "instruction",
-    props: true,
-    component: Instruction
-  }
   // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  //   path: '*',
+  //   redirect: "/consent"
   // }
 ];
 

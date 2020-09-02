@@ -6,30 +6,13 @@
       </v-btn>
     </v-overlay>
     <v-toolbar dense elevation="1" floating>
-      <v-text-field
-        class="mr-2 shrink"
-        dense
-        hide-details
-        single-line
-        solo
-        label="Question Index: "
-        append-icon="mdi-arrow-right-bold"
-        v-model="gotoIdx"
-        @click:append="goto"
-      ></v-text-field>
-      <v-btn class="mr-2" small @click="randomQuestion">
-        <v-icon>mdi-shuffle-variant</v-icon>
-      </v-btn>
-      <v-btn class="mr-2" small @click="backup">
-        <v-icon>mdi-backup-restore</v-icon>
-      </v-btn>
       <v-btn class="mr-2" small @click="togglePause">Pause</v-btn>
     </v-toolbar>
     <v-card-text>
       <v-container>
         <v-row>
           <v-col>
-            <CollectorQuestion :question="question" />
+            <CollectorQuestion v-if="ready" :question="question" />
           </v-col>
         </v-row>
         <v-row>
@@ -76,11 +59,6 @@ import { Watch } from "vue-property-decorator";
   },
 })
 export default class Collector extends Vue {
-  gotoIdx = -1;
-  previousIndices = [] as number[];
-  created() {
-    this.randomQuestion(true);
-  }
   get state() {
     return this.$store.state as CollectorModel;
   }
@@ -102,9 +80,6 @@ export default class Collector extends Vue {
   get user() {
     return this.state.user;
   }
-  get levels() {
-    return this.state.levels;
-  }
   get ranked(): boolean {
     return this.state.interfaceName != "Basic";
   }
@@ -113,6 +88,27 @@ export default class Collector extends Vue {
   }
 
   ready = false;
+
+  created() {
+    if (this.state.instructionDone && !this.state.practiceDone) {
+      this.indexedQuestion(this.state.practiceQuestions[0]);
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      !this.state.basicDone
+    ) {
+      this.indexedQuestion(this.state.basicQuestions[0]);
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      this.state.basicDone &&
+      !this.state.rankedDone
+    ) {
+      this.indexedQuestion(this.state.rankedQuestions[0]);
+    } else {
+      this.$router.replace({ name: "consent" });
+    }
+  }
 
   time() {
     if (this.state.startTime != -1) {
@@ -125,7 +121,6 @@ export default class Collector extends Vue {
   createSubmitData() {
     return {
       user: this.state.user,
-      levels: this.state.levels,
       interface: this.state.interfaceName,
       totalTime: this.state.sessionTime,
       data: {
@@ -147,10 +142,11 @@ export default class Collector extends Vue {
     const time = this.time();
     this.$store.dispatch("addSessionTime", { time });
     const submitData = this.createSubmitData();
+    console.log(submitData);
     axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
       function (this: Collector, response: AxiosResponse) {
         if (response.data.success == "true") {
-          this.randomQuestion(true);
+          this.nextQuestion();
         } else {
           alert(response.data);
         }
@@ -165,7 +161,7 @@ export default class Collector extends Vue {
     axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
       function (this: Collector, response: AxiosResponse) {
         if (response.data.success == "true") {
-          this.randomQuestion(true);
+          this.nextQuestion();
         } else {
           alert(response.data);
         }
@@ -173,17 +169,46 @@ export default class Collector extends Vue {
     );
   }
 
-  goto() {
-    this.indexedQuestion(this.gotoIdx, true);
-  }
-
-  backup() {
-    if (this.previousIndices.length) {
-      this.indexedQuestion(this.previousIndices.pop() as number, false);
+  nextQuestion() {
+    if (this.state.instructionDone && !this.state.practiceDone) {
+      const pos = this.state.practiceQuestions.indexOf(this.datum.idx);
+      if (pos == this.state.practiceQuestions.length - 1) {
+        this.$store.commit("setPracticeDone", true);
+        this.$router.replace({ name: "instruction" });
+      } else {
+        this.indexedQuestion(this.state.practiceQuestions[pos + 1]);
+      }
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      !this.state.basicDone
+    ) {
+      const pos = this.state.basicQuestions.indexOf(this.datum.idx);
+      if (pos == this.state.basicQuestions.length - 1) {
+        this.$store.commit("setBasicDone", true);
+        this.$router.replace({ name: "instruction" });
+      } else {
+        this.indexedQuestion(this.state.basicQuestions[pos + 1]);
+      }
+    } else if (
+      this.state.instructionDone &&
+      this.state.practiceDone &&
+      this.state.basicDone &&
+      !this.state.rankedDone
+    ) {
+      const pos = this.state.rankedQuestions.indexOf(this.datum.idx);
+      if (pos == this.state.rankedQuestions.length - 1) {
+        this.$store.commit("setRankedDone", true);
+        this.$router.replace({ name: "questionnaire" });
+      } else {
+        this.indexedQuestion(this.state.rankedQuestions[pos + 1]);
+      }
+    } else {
+      this.$router.replace({ name: "consent" });
     }
   }
 
-  indexedQuestion(idx: number, save: boolean) {
+  indexedQuestion(idx: number) {
     this.ready = false;
     axios
       .get(process.env.VUE_APP_API_URL + "/question", {
@@ -191,38 +216,17 @@ export default class Collector extends Vue {
       })
       .then(
         function (this: Collector, response: AxiosResponse) {
-          this.newQuestion(response.data, save);
+          console.log(response.data);
+          this.newQuestion(response.data);
         }.bind(this)
       );
   }
 
-  randomQuestion(save: boolean) {
-    this.ready = false;
-    axios
-      .get(process.env.VUE_APP_API_URL + "/question", {
-        params: {
-          user: this.user,
-          easy: this.levels.easy,
-          medium: this.levels.medium,
-          hard: this.levels.hard,
-        },
-      })
-      .then(
-        function (this: Collector, response: AxiosResponse) {
-          this.newQuestion(response.data, save);
-        }.bind(this)
-      );
-  }
-
-  newQuestion(datum: Datum, save: boolean) {
-    if (!datum || !datum.idx) {
+  newQuestion(datum: Datum) {
+    if (!datum) {
       return;
     }
-    if (this.datum.idx && this.datum.idx != -1 && save) {
-      this.previousIndices.push(this.datum.idx);
-    }
     this.$store.dispatch("newDatum", { datum }).then(() => {
-      this.gotoIdx = datum.idx;
       if (this.ranked) {
         this.getRankedContext();
       } else {
