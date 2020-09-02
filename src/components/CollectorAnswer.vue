@@ -64,7 +64,7 @@
             </v-dialog>
           </v-col>
           <v-col>
-            <v-btn small v-if="false" @click="onBackToInstructions">Back to Instructions</v-btn>
+            <v-btn small v-if="practice" @click="onBackToInstructions">Back to Instructions</v-btn>
           </v-col>
         </v-row>
       </v-container>

@@ -34,6 +34,19 @@
               <v-radio label="Very Confident" value="4"></v-radio>
             </v-radio-group>
           </v-form>
+          <v-form v-if="questionType[index] == 'expert'" v-model="valid[index]">
+            <v-radio-group row v-model="result[index]" class="mx-auto" :rules="radioRules" required>
+              <v-radio label="Never Heard Of" value="0"></v-radio>
+              <v-spacer />
+              <v-radio label="Novice" value="1"></v-radio>
+              <v-spacer />
+              <v-radio label="Intermediate" value="2"></v-radio>
+              <v-spacer />
+              <v-radio label="Advanced" value="3"></v-radio>
+              <v-spacer />
+              <v-radio label="Expert" value="4"></v-radio>
+            </v-radio-group>
+          </v-form>
           <v-form v-if="questionType[index] == 'free'" v-model="valid[index]">
             <v-textarea
               auto-grow
@@ -72,6 +85,8 @@ import {
 @Component
 export default class Questionnaire extends Vue {
   questions = [
+    "How would you describe your level of expertise in the field of natrual language processing?",
+    "How would you describe your level of expertise in the field of data visualization?",
     "Which interface did you find easier to interact with and use?",
     "Of the interfaces you used, which did you think allowed you to most accurately answer questions?",
     "Of the interfaces you used, which did you think allowed you to answer the most questions?",
@@ -86,18 +101,20 @@ export default class Questionnaire extends Vue {
     "Use this box to leave any additional comments about the experiment (Maximum 150 characters.)",
   ];
   questionType = {
-    0: "A/B",
-    1: "A/B",
+    0: "expert",
+    1: "expert",
     2: "A/B",
     3: "A/B",
-    4: "scale",
-    5: "scale",
-    6: "A/B",
+    4: "A/B",
+    5: "A/B",
+    6: "scale",
     7: "scale",
-    8: "scale",
-    9: "free",
-    10: "free",
+    8: "A/B",
+    9: "scale",
+    10: "scale",
     11: "free",
+    12: "free",
+    13: "free",
   };
   questionRequired = {
     0: true,
@@ -111,7 +128,9 @@ export default class Questionnaire extends Vue {
     8: true,
     9: true,
     10: true,
-    11: false,
+    11: true,
+    12: true,
+    13: false,
   };
   radioRules = [(v: string) => !!v || "This question is required."];
   textRules = [
