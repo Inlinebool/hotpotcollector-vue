@@ -4,7 +4,7 @@
       <v-container>
         <v-row class="grey lighten-4 mb-2">
           <p>Hint:</p>
-          <p>In many cases, the answer can either be a yes or no, or a span from the facts that can be used to answer the question, i.e., the facts you have selected.</p>
+          <p>In many cases, the answer can either be a yes or no, or a span of text taken from the facts that can be used to answer the question, i.e., the facts you have selected.</p>
         </v-row>
         <v-form v-model="answerValid" ref="answerForm">
           <v-row>
@@ -81,7 +81,10 @@ import CollectorModel from "@/CollectorModel";
 export default class CollectorAnswer extends Vue {
   dialog = false;
   answerValid = false;
-  answerRule = [(v: string) => !!v || "Answer cannot be empty."];
+  answerRule = [
+    (v: string) => !!v || "Answer cannot be empty.",
+    (v: string) => (v && v.length <= 5000) || "Max 5000 characters",
+  ];
 
   get valid() {
     return this.state.selectedFactsArray.length > 0;
