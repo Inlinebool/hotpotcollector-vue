@@ -64,7 +64,16 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn @click="submit" :disabled="!allValid">Submit</v-btn>
+      <v-btn @click.stop="submit" :disabled="!allValid">Submit</v-btn>
+      <v-dialog v-model="dialog" width="500" persistent>
+        <v-card>
+          <v-card-title>Thank you for taking this study!</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="backToConsent">DONE</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-card-actions>
   </v-card>
 </template>
@@ -96,9 +105,11 @@ export default class Questionnaire extends Vue {
     "Which interface made it most easy to identify answers?",
     "In the first interface (grouped by topic), how confident were you in providing answer?",
     "In the second interface (ranked individual sentences), how confident were you in providing answer?",
-    "What characteristics of the interface did you find to be most useful? (Maximum 150 characters.)",
-    "What characteristics of the interface did you find to be least useful? (Maximum 150 characters.)",
-    "Use this box to leave any additional comments about the experiment (Maximum 150 characters.)",
+    "For the first interface (grouped by topic), what characteristics of the interface did you find to be most useful?",
+    "For the second interface (ranked individual sentences), what characteristics of the interface did you find to be most useful?",
+    "For the first interface (grouped by topic), what characteristics of the interface did you find to be least useful? ",
+    "For the second interface (ranked individual sentences), what characteristics of the interface did you find to be least useful?",
+    "Use this box to leave any additional comments about the experiment.",
   ];
   questionType = {
     0: "expert",
@@ -115,6 +126,8 @@ export default class Questionnaire extends Vue {
     11: "free",
     12: "free",
     13: "free",
+    14: "free",
+    15: "free",
   };
   questionRequired = {
     0: true,
@@ -127,21 +140,24 @@ export default class Questionnaire extends Vue {
     7: true,
     8: true,
     9: true,
-    10: true,
-    11: true,
-    12: true,
+    10: false,
+    11: false,
+    12: false,
     13: false,
+    14: false,
+    15: false,
   };
   radioRules = [(v: string) => !!v || "This question is required."];
   textRules = [
-    (v: string) => !v || (v && v.length <= 150) || "Max 150 characters",
+    (v: string) => !v || (v && v.length <= 5000) || "Max 5000 characters",
   ];
   textRulesRequired = [
     (v: string) => !!v || "This question is required.",
-    (v: string) => (v && v.length <= 150) || "Max 150 characters",
+    (v: string) => (v && v.length <= 5000) || "Max 5000 characters",
   ];
   result = [] as string[];
   valid = [] as boolean[];
+  dialog = false;
   get allValid() {
     let valid = true;
     for (let i = 0; i < this.questions.length; i++) {
@@ -192,10 +208,14 @@ export default class Questionnaire extends Vue {
     axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
       function (this: Questionnaire, response: AxiosResponse) {
         if (response.data.success == "true") {
-          this.$router.replace({ name: "consent" });
+          this.dialog = true;
+          // this.$router.replace({ name: "consent" });
         }
       }.bind(this)
     );
+  }
+  backToConsent() {
+    this.$router.replace({ name: "consent" });
   }
 }
 </script>

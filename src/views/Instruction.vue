@@ -32,7 +32,6 @@
       <div v-if="page == 2">
         <p>Here is an overview of the interface. At the top is the question, and the facts are listed below grouped by topic.</p>
         <p>Each topic is tagged with a capital letter, and each fact is tagged by their topic as well as its number within the topic.</p>
-        <p>You can pause the process by clicking on the "PAUSE" button on the top left corner.</p>
         <p>
           In the facts, all words that appear in the question will have a
           <span class="question">blue</span> background.
@@ -94,10 +93,8 @@
           >highlighted</span> within the facts. In fact, for most questions, the answer is either a
           <span
             class="strong-1"
-          >yes or no</span>, or a span from the facts that you use to answer the question, that is,
-          <span
-            class="strong-1"
-          >a span from the facts that you select</span>.
+          >yes or no</span>, or
+          <span class="strong-1">a span of text taken from the facts</span> that you use to answer the question (the facts that you select). For example, the answer “Rings” is a span of text from both Fact D-2 and G-2 (highlighted).
         </p>
         <p>
           Finally, after selecting all the supporting facts and typing in the answer, we click
@@ -119,11 +116,13 @@
       </div>
       <div v-if="page == 8">
         <p>Now that you have familiar yourself with the task and the interface, try to answer the next 10 questions as quickly and as accurately as possible. For these questions, we will time your process and record your operations (search, scroll, click, type, etc.) with the interface.</p>
+        <p>You can pause the process by clicking on the "PAUSE" button on the top left corner.</p>
         <p class="red--text darken-3">
           Note: You will
           <span class="font-weight-bold font-italic">not</span> be able to go back to the instructions once you hit "START".
         </p>
         <p>If you are still not ready, click the "BACK" button to start over the instructions.</p>
+        <v-img src="../img/pause.png" contain max-width="100%"></v-img>
       </div>
       <div v-if="page == 9">
         <p>Now try 10 more questions with a different interface.</p>
@@ -267,7 +266,7 @@ export default class Instruction extends Vue {
   get subtitle() {
     switch (this.page) {
       case 1:
-        return "Welcome!";
+        return "";
       case 2:
         return "Overview";
       case 3:
