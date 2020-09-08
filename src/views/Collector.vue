@@ -5,7 +5,7 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-overlay>
-    <v-toolbar dense elevation="1" floating>
+    <v-toolbar v-if="!practice" dense elevation="1" floating>
       <v-btn class="mr-2" small @click="togglePause">Pause</v-btn>
     </v-toolbar>
     <v-card-text>
@@ -85,6 +85,9 @@ export default class Collector extends Vue {
   }
   get paused() {
     return this.state.isPaused;
+  }
+  get practice() {
+    return !this.state.practiceDone
   }
 
   ready = false;

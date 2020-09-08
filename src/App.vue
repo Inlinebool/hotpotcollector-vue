@@ -13,7 +13,8 @@
       dark
       fixed
       bottom
-      right
+      small
+      style="left: 50%; transform: translateX(-50%)"
       color="primary"
       @click="toTop"
     >

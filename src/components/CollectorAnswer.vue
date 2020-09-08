@@ -4,7 +4,11 @@
       <v-container>
         <v-row class="grey lighten-4 mb-2">
           <p>Hint:</p>
-          <p>In many cases, the answer can either be a yes or no, or a span of text taken from the facts that can be used to answer the question, i.e., the facts you have selected.</p>
+          <p>
+            For most questions, the answer is either a
+            <span class="font-weight-bold">yes or no</span>, or
+            <span class="font-weight-bold">a span of text taken from the facts</span> that you use to answer the question (the facts that you select).
+          </p>
         </v-row>
         <v-form v-model="answerValid" ref="answerForm">
           <v-row>
@@ -33,7 +37,7 @@
               :disabled="!valid || !answerValid"
             >Submit and Next Question</v-btn>
           </v-col>
-          <v-col>
+          <v-col v-if="!practice">
             <v-dialog
               v-model="dialog"
               width="500"

@@ -117,12 +117,12 @@
       <div v-if="page == 8">
         <p>Now that you have familiar yourself with the task and the interface, try to answer the next 10 questions as quickly and as accurately as possible. For these questions, we will time your process and record your operations (search, scroll, click, type, etc.) with the interface.</p>
         <p>You can pause the process by clicking on the "PAUSE" button on the top left corner.</p>
+        <v-img src="../img/pause.png" contain max-width="100%" class="mb-7"></v-img>
         <p class="red--text darken-3">
           Note: You will
           <span class="font-weight-bold font-italic">not</span> be able to go back to the instructions once you hit "START".
         </p>
         <p>If you are still not ready, click the "BACK" button to start over the instructions.</p>
-        <v-img src="../img/pause.png" contain max-width="100%"></v-img>
       </div>
       <div v-if="page == 9">
         <p>Now try 10 more questions with a different interface.</p>
@@ -138,6 +138,9 @@
             class="strong-2"
           >and</span> all the facts you have selected, so you'll see facts moving around when you click.
         </p>
+        <p
+          class="red--text darken-3"
+        >Try reading the top facts first. They are likely ones that are relevant to the question.</p>
         <p>The topic is shown at the end of each fact, and when you click on the topic all the facts within that topic will show up.</p>
         <p>There is also a topic selection panel where you can toggle visibility of facts within certain topics.</p>
         <p>Search bar is also available. Fact selection and answer input are the same as before.</p>
@@ -158,6 +161,9 @@
             class="strong-2"
           >and</span> all the facts you have selected, so you'll see facts moving around when you click.
         </p>
+        <p
+          class="red--text darken-3"
+        >Try reading the top facts first. They are likely ones that are relevant to the question.</p>
         <p>Search bar is also available. Fact selection and answer input are the same as before.</p>
         <v-divider class="my-5"></v-divider>
         <v-img src="../img/overview_B.png" contain max-width="100%"></v-img>
