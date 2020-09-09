@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>Mulhop QA Data Collector</v-toolbar-title>
+      <v-toolbar-title>Multihop QA Data Collector</v-toolbar-title>
     </v-app-bar>
     <v-content>
       <router-view />
