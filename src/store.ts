@@ -33,7 +33,8 @@ export default new Vuex.Store({
     isPaused: false,
     operationRecords: [] as OperationRecord[],
     interfaceName: "Basic",
-    contexted: false
+    contexted: false,
+    sessionStartTime: -1
   } as CollectorModel,
 
   getters: {
@@ -85,6 +86,9 @@ export default new Vuex.Store({
     setAnswer(state, answer: string) {
       state.answer = answer ? answer : "";
     },
+    setSessionStartTime(state, time: number) {
+      state.sessionStartTime = time;
+    },
     setNote(state, note: string) {
       state.note = note ? note : "";
     },
@@ -134,6 +138,7 @@ export default new Vuex.Store({
       state.selectedFactsArray = Array.from(state.selectedFacts);
     },
     appendOperationRecord(state, record: OperationRecord) {
+      record.realTime = Date.now();
       state.operationRecords.push(record);
     },
     clearOperationRecords(state) {
@@ -304,6 +309,13 @@ export default new Vuex.Store({
     addSkipClickedRecord(context, { time }) {
       context.commit("appendOperationRecord", {
         name: "skip_clicked",
+        data: "",
+        time: time
+      } as OperationRecord);
+    },
+    addSubmitClickedRecord(context, { time }) {
+      context.commit("appendOperationRecord", {
+        name: "submit_clicked",
         data: "",
         time: time
       } as OperationRecord);

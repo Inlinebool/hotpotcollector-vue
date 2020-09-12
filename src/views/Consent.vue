@@ -127,6 +127,7 @@ export default class Consent extends Vue {
           "setRankedQuestions",
           newUserResponse.ranked_questions
         );
+        this.$store.commit("setSessionStartTime", Date.now());
         this.$router.push({ name: "instruction" });
       }.bind(this)
     );

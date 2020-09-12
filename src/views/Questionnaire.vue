@@ -198,8 +198,12 @@ export default class Questionnaire extends Vue {
     const submitData = {
       user: this.state.user,
       interface: this.state.interfaceName,
-      totalTime: this.state.sessionTime,
+      questionTotalTime: this.state.sessionTime,
+      sessionStartRealTime: this.state.sessionStartTime,
+      sessionEndRealTime: Date.now(),
       data: {
+        basicQuestions: this.state.basicQuestions,
+        rankQuestions: this.state.rankedQuestions,
         contexted: this.state.contexted,
         result: this.result,
       } as QuestionnaireData,

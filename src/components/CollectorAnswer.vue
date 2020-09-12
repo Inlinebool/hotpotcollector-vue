@@ -31,15 +31,39 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-btn
-              small
-              @click="onSubmit"
-              :disabled="!valid || !answerValid"
-            >Submit and Next Question</v-btn>
+            <v-dialog
+              v-model="submitDialog"
+              width="500"
+              persistent
+              overlay-opacity="1"
+              overlay-color="black"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  small
+                  v-on="on"
+                  v-bind="attrs"
+                  @click="onSubmit"
+                  :disabled="!valid || !answerValid"
+                >Submit and Next Question</v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <p
+                    class="font-weight-bold"
+                  >Are you sure you want to submit? You cannot go back to this question after submission.</p>
+                </v-card-title>
+                <v-card-actions>
+                  <v-btn small @click="onSubmitAbort">Return to Question</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn small @click="onSubmitSubmit">Submit</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-col>
           <v-col v-if="!practice">
             <v-dialog
-              v-model="dialog"
+              v-model="skipDialog"
               width="500"
               persistent
               overlay-opacity="1"
@@ -83,7 +107,8 @@ import CollectorModel from "@/CollectorModel";
 
 @Component
 export default class CollectorAnswer extends Vue {
-  dialog = false;
+  submitDialog = false;
+  skipDialog = false;
   answerValid = false;
   answerRule = [
     (v: string) => !!v || "Answer cannot be empty.",
@@ -119,6 +144,19 @@ export default class CollectorAnswer extends Vue {
   }
 
   onSubmit() {
+    const time = Date.now() - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addSubmitClickedRecord", { time });
+    this.$store.dispatch("togglePause");
+  }
+
+  onSubmitAbort() {
+    this.$store.dispatch("togglePause");
+    this.submitDialog = false;
+  }
+
+  onSubmitSubmit() {
+    this.$store.dispatch("togglePause");
+    this.submitDialog = false;
     this.$emit("submit");
     this.clear();
   }
@@ -136,12 +174,12 @@ export default class CollectorAnswer extends Vue {
 
   onSkipAbort() {
     this.$store.dispatch("togglePause");
-    this.dialog = false;
+    this.skipDialog = false;
   }
 
   onSkipSubmit() {
     this.$store.dispatch("togglePause");
-    this.dialog = false;
+    this.skipDialog = false;
     this.$emit("skip");
     this.clear();
   }

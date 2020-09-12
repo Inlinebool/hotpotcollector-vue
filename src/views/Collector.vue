@@ -87,7 +87,7 @@ export default class Collector extends Vue {
     return this.state.isPaused;
   }
   get practice() {
-    return !this.state.practiceDone
+    return !this.state.practiceDone;
   }
 
   ready = false;
@@ -121,18 +121,22 @@ export default class Collector extends Vue {
     }
   }
 
-  createSubmitData() {
+  createSubmitData(dataTime: number, endRealTime: number) {
     return {
       user: this.state.user,
       interface: this.state.interfaceName,
-      totalTime: this.state.sessionTime,
+      questionTotalTime: this.state.sessionTime,
+      sessionStartRealTime: this.state.sessionStartTime,
+      sessionEndRealTime: NaN,
       data: {
         idx: this.state.datum.idx,
         answer: this.state.answer,
         notes: this.state.note,
         supportingFacts: this.state.selectedFactsArray,
         operationRecord: this.state.operationRecords,
-        time: this.time(),
+        time: dataTime,
+        startRealTime: this.state.startTime,
+        endRealTime: endRealTime,
       } as AnswerData,
     } as AnswerSubmit;
   }
@@ -142,9 +146,10 @@ export default class Collector extends Vue {
       alert("You must type in the answer before submit.");
       return;
     }
-    const time = this.time();
-    this.$store.dispatch("addSessionTime", { time });
-    const submitData = this.createSubmitData();
+    const endRealTime = Date.now();
+    const dataTime = endRealTime - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addSessionTime", { time: dataTime });
+    const submitData = this.createSubmitData(dataTime, endRealTime);
     console.log(submitData);
     axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
       function (this: Collector, response: AxiosResponse) {
@@ -158,9 +163,10 @@ export default class Collector extends Vue {
   }
 
   onSkip() {
-    const time = this.time();
-    this.$store.dispatch("addSessionTime", { time });
-    const submitData = this.createSubmitData();
+    const endRealTime = Date.now();
+    const dataTime = endRealTime - this.state.startTime - this.state.pausedTime;
+    this.$store.dispatch("addSessionTime", { time: dataTime });
+    const submitData = this.createSubmitData(dataTime, endRealTime);
     axios.post(process.env.VUE_APP_API_URL + "/answer", submitData).then(
       function (this: Collector, response: AxiosResponse) {
         if (response.data.success == "true") {

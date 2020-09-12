@@ -50,11 +50,15 @@ export interface ParagraphSimilarity {
 export interface AnswerSubmit {
   user: string;
   interface: string;
-  totalTime: number;
+  questionTotalTime: number;
+  sessionStartRealTime: number;
+  sessionEndRealTime: number;
   data: AnswerData | QuestionnaireData;
 }
 
 export interface QuestionnaireData {
+  basicQuestions: number[];
+  rankQuestions: number[];
   contexted: boolean;
   result: string[];
 }
@@ -73,12 +77,15 @@ export interface AnswerData {
   supportingFacts: number[];
   operationRecord: OperationRecord[];
   time: number;
+  startRealTime: number;
+  endRealTime: number;
 }
 
 export interface OperationRecord {
   name: string;
   data: any;
   time: number;
+  realTime: number;
 }
 
 export function searchContext(context: Paragraph[], searchQuery: string) {

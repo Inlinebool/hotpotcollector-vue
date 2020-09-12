@@ -28,6 +28,7 @@ export default interface CollectorModel {
   operationRecords: OperationRecord[];
   interfaceName: string;
   contexted: boolean;
+  sessionStartTime: number;
 }
 
 export interface NameReference {
