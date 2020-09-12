@@ -173,11 +173,21 @@ export default new Vuex.Store({
     onFactClicked(context, { factNumber, time }) {
       if (context.state.selectedFacts.has(factNumber)) {
         context.commit("removeSelectedFact", factNumber);
+        context.commit("appendOperationRecord", {
+          name: "remove_fact",
+          data: factNumber,
+          time: time
+        } as OperationRecord);
       } else {
         context.commit("addSelectedFact", factNumber);
+        context.commit("appendOperationRecord", {
+          name: "select_fact",
+          data: factNumber,
+          time: time
+        } as OperationRecord);
       }
       context.commit("appendOperationRecord", {
-        name: "select",
+        name: "click_fact",
         data: Array.from(context.state.selectedFacts),
         time: time
       } as OperationRecord);
