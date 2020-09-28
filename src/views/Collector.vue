@@ -263,8 +263,6 @@ export default class Collector extends Vue {
             "updateRankedFactNumbers",
             rankResponse.ranked_fact_numbers
           );
-          this.ready = true;
-          this.$store.commit("setStartTime", Date.now());
         }.bind(this)
       );
   }
@@ -281,8 +279,10 @@ export default class Collector extends Vue {
             "updateRankedParagraphs",
             rankedParagraphs.ranked_paragraphs
           );
-          this.ready = true;
-          this.$store.commit("setStartTime", Date.now());
+          if (!this.ready) {
+            this.ready = true;
+            this.$store.commit("setStartTime", Date.now());
+          }
         }.bind(this)
       );
   }
