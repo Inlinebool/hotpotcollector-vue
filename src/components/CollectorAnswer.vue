@@ -61,7 +61,7 @@
               </v-card>
             </v-dialog>
           </v-col>
-          <v-col v-if="!practice">
+          <v-col v-if="!false">
             <v-dialog
               v-model="skipDialog"
               width="500"
@@ -92,7 +92,10 @@
             </v-dialog>
           </v-col>
           <v-col>
-            <v-btn small v-if="practice" @click="onBackToInstructions">Back to Instructions</v-btn>
+            <v-btn small v-if="false" @click="onBackToInstructions">Back to Instructions</v-btn>
+          </v-col>
+          <v-col>
+            <v-btn small v-if="true" @click="skipToNext">Skip to Next</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -182,6 +185,10 @@ export default class CollectorAnswer extends Vue {
     this.skipDialog = false;
     this.$emit("skip");
     this.clear();
+  }
+
+  skipToNext() {
+    this.$emit("skip")
   }
 
   clear() {
