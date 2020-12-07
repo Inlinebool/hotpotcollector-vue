@@ -136,7 +136,7 @@ export default class Collector extends Vue {
     // } else {
     //   this.$router.replace({ name: "consent" });
     // }
-    this.randomQuestion();
+    this.randomQuestion(true);
   }
 
   time() {
