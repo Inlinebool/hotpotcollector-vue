@@ -4,6 +4,7 @@ import Collector from '@/views/Collector.vue';
 import Instruction from '@/views/Instruction.vue';
 import Consent from '@/views/Consent.vue';
 import Questionnaire from "@/views/Questionnaire.vue"
+import UserSelect from "@/views/UserSelect.vue"
 
 Vue.use(VueRouter);
 
@@ -31,7 +32,12 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: "root",
-    redirect: "/consent"
+    redirect: "/userselect"
+  },
+  {
+    path: '/userselect',
+    name: "userselect",
+    component: UserSelect
   },
   // {
   //   path: '*',

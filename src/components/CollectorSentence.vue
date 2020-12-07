@@ -121,7 +121,7 @@ export default class CollectorSentence extends Vue {
   }
 
   get sentenceNumberText() {
-    return "[" + this.sentenceReference[this.sentence[0]] + "]";
+    return "[" + this.sentence[0] + "]";
   }
 
   get searchHighlighted() {

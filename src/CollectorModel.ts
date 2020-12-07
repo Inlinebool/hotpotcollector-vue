@@ -29,6 +29,7 @@ export default interface CollectorModel {
   interfaceName: string;
   contexted: boolean;
   sessionStartTime: number;
+  levels: Levels;
 }
 
 export interface NameReference {

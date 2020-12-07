@@ -34,7 +34,8 @@ export default new Vuex.Store({
     operationRecords: [] as OperationRecord[],
     interfaceName: "Basic",
     contexted: false,
-    sessionStartTime: -1
+    sessionStartTime: -1,
+    levels: {'easy': true, 'medium': true, 'hard': true}
   } as CollectorModel,
 
   getters: {
@@ -46,6 +47,9 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user: string) {
       state.user = user;
+    },
+    setLevels(state, levels: Levels){
+      state.levels = levels;
     },
     setBasicQuestions(state, basicQuestions: number[]) {
       state.basicQuestions = basicQuestions;
