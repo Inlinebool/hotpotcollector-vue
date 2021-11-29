@@ -1,4 +1,17 @@
-# newhotpotcollector
+# A User Study for QA Annotation Interfaces
+
+Baseline Interface:
+
+* Grouped by paragraph
+* Show / hide paragraph
+* Search for keywords, highlight occurrences and automatically hide unrelated paragraphs
+
+Proposed interface:
+
+* No group. Sentences ranked by relevance to the question.
+* After each selection, update ranking by relevance to the question + selected sentences.
+
+User operation and timestamps are recorded.
 
 ## Project setup
 ```
